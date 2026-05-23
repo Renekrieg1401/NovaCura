@@ -238,8 +238,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Outfit',sans-serif
   </div>
   <div class="sb-nav">
     <div class="sb-sec">Dokumente</div>
-    <div class="fhd open" onclick="tF(this)"><div class="ico-fld"></div><span class="fl">Schulungen</span><span class="fc">&#8250;</span></div>
-    <div class="fbody open">
+    <div class="fhd" onclick="tF(this)"><div class="ico-fld"></div><span class="fl">Schulungen</span><span class="fc">&#8250;</span></div>
+    <div class="fbody">
       <div class="dlink" id="nav-sis" onclick="openDoc('sis',this)"><div class="ico-file"></div><span>SiS-Schulung</span></div>
       <div class="dlink" id="nav-qpr" onclick="openDoc('qpr',this)"><div class="ico-file"></div><span>QPR-Schulung 2026</span></div>
     </div>
@@ -249,10 +249,10 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Outfit',sans-serif
     <div class="fbody"><div class="dlink ph">&#8722; Folgt demn&auml;chst&hellip;</div></div>
     <div class="fhd" onclick="tF(this)"><div class="ico-fld"></div><span class="fl">Formulare</span><span class="fc">&#8250;</span></div>
     <div class="fbody"><div class="dlink ph">&#8722; Folgt demn&auml;chst&hellip;</div></div>
-    <div class="fhd open" onclick="tF(this)"><div class="ico-fld"></div><span class="fl">Richtlinien / Standards</span><span class="fc">&#8250;</span></div>
-    <div class="fbody open">
-      <div class="fhd open" onclick="tF(this)" style="font-size:12.5px;padding:7px 10px"><div class="ico-fld" style="transform:scale(.82)"></div><span class="fl">Expertenstandards (DNQP)</span><span class="fc">&#8250;</span></div>
-      <div class="fbody2 open">
+    <div class="fhd" onclick="tF(this)"><div class="ico-fld"></div><span class="fl">Richtlinien / Standards</span><span class="fc">&#8250;</span></div>
+    <div class="fbody">
+      <div class="fhd" onclick="tF(this)" style="font-size:12.5px;padding:7px 10px"><div class="ico-fld" style="transform:scale(.82)"></div><span class="fl">Expertenstandards (DNQP)</span><span class="fc">&#8250;</span></div>
+      <div class="fbody2">
         <div class="es-sb-all" onclick="openESList()"><span style="font-size:13px">&#x1F4CB;</span><span>Alle 13 Standards</span></div>
         <div class="es-sb-entry" id="nav-es-dekubitus" onclick="openES('dekubitus',this)"><span class="es-dot" style="background:#C0392B"></span><span>#01 Dekubitus</span></div>
         <div class="es-sb-entry" id="nav-es-entlassung" onclick="openES('entlassung',this)"><span class="es-dot" style="background:#2471A3"></span><span>#02 Entlassung</span></div>
@@ -710,14 +710,7 @@ function toast(msg){var t=document.getElementById('toast');document.getElementBy
 
 /* ── Init ── */
 document.addEventListener('DOMContentLoaded',function(){
-  var ld=lv('ld',null);
-  if(!ld){showV('homeView');return}
-  try{
-    if(ld.startsWith('doc:')){var k=ld.slice(4);if(DOCS[k])openDoc(k,document.getElementById('nav-'+k));else showV('homeView');}
-    else if(ld.startsWith('es:')){var id=ld.slice(3);if(ESM[id])openES(id);else showV('homeView');}
-    else if(ld==='eslist'){openESList();}
-    else{showV('homeView');}
-  }catch(e){showV('homeView');}
+  showV('homeView');
 });
 </script>
 </body>
