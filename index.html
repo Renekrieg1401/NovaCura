@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>NovaCura – Schulungsportal</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --v1:#041E26;--v2:#073645;--v3:#0A5C68;--v4:#0E7A8A;
+  --ac:#0EC4B0;--a2:#0A9E8E;--a3:#C8F5F0;
+  --am:#F5A623;--ok:#27AE60;--er:#E74C3C;
+  --bg:#EFF8F7;--sf:#FFFFFF;
+  --tx:#0B2028;--t2:#2A5560;--t3:#6A9AA5;
+  --bd:#B8E4DF;--sw:285px;--hh:64px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background:var(--v1);color:var(--tx);-webkit-font-smoothing:antialiased}
+
+/* OVERLAY */
+.ov{position:fixed;inset:0;background:rgba(4,20,30,.72);z-index:400;display:none;backdrop-filter:blur(5px)}
+.ov.on{display:block}
+
+/* ─── SIDEBAR ─── */
+.sidebar{position:fixed;top:0;left:calc(-1*var(--sw));width:var(--sw);height:100vh;background:var(--v1);z-index:500;display:flex;flex-direction:column;transition:left .3s cubic-bezier(.4,0,.2,1);box-shadow:10px 0 44px rgba(4,20,30,.7);border-right:1px solid rgba(255,255,255,.05)}
+.sidebar.open{left:0}
+.sb-top{padding:16px 14px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.sb-brand{display:flex;align-items:center;gap:10px}
+.sb-close{width:30px;height:30px;background:rgba(255,255,255,.08);border:none;border-radius:7px;color:rgba(255,255,255,.7);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0}
+.sb-close:hover{background:rgba(255,255,255,.18);color:#fff}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 8px}
+.sb-nav::-webkit-scrollbar{width:3px}
+.sb-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+.sb-sec{font-size:9px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:rgba(255,255,255,.22);padding:10px 10px 4px}
+.fhd{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;user-select:none;color:rgba(255,255,255,.68);font-size:13px;font-weight:500;transition:all .18s;margin-bottom:1px}
+.fhd:hover{background:rgba(255,255,255,.07);color:#fff}
+.ico-fld{width:17px;height:14px;position:relative;flex-shrink:0}
+.ico-fld::before{content:'';position:absolute;bottom:0;left:0;right:0;height:10px;background:var(--am);border-radius:0 2px 2px 2px}
+.ico-fld::after{content:'';position:absolute;top:0;left:0;width:7px;height:5px;background:var(--am);border-radius:2px 2px 0 0}
+.fhd .fl{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fhd .fc{font-size:10px;color:rgba(255,255,255,.22);transition:transform .22s;flex-shrink:0}
+.fhd.open .fc{transform:rotate(90deg)}
+.fbody{padding-left:12px;display:none}
+.fbody.open{display:block}
+.fbody2{padding-left:12px;display:none}
+.fbody2.open{display:block}
+.dlink{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;cursor:pointer;color:rgba(255,255,255,.48);font-size:12.5px;transition:all .18s;margin-bottom:1px}
+.dlink:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9)}
+.dlink.active{background:rgba(14,196,176,.15);color:#80EDE4}
+.ico-file{width:12px;height:15px;flex-shrink:0;position:relative}
+.ico-file::before{content:'';position:absolute;inset:0;background:var(--ac);border-radius:1px 4px 2px 2px;clip-path:polygon(0 0,70% 0,100% 30%,100% 100%,0 100%)}
+.ico-file::after{content:'';position:absolute;top:0;right:0;width:4px;height:5px;background:rgba(0,60,70,.4);border-bottom-left-radius:2px}
+.dlink.ph{color:rgba(255,255,255,.2);cursor:default;font-style:italic;font-size:11px}
+.dlink.ph:hover{background:none;color:rgba(255,255,255,.2)}
+.es-sb-entry{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:6px;cursor:pointer;color:rgba(255,255,255,.46);font-size:11.5px;transition:all .18s;margin-bottom:1px}
+.es-sb-entry:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85)}
+.es-sb-entry.active{background:rgba(14,196,176,.15);color:#80EDE4}
+.es-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.es-sb-all{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;cursor:pointer;color:rgba(255,255,255,.62);font-size:12.5px;font-weight:600;transition:all .18s;margin-bottom:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+.es-sb-all:hover{background:rgba(255,255,255,.1);color:#fff}
+.sb-footer{padding:12px 16px;border-top:1px solid rgba(255,255,255,.06);font-size:10px;color:rgba(255,255,255,.18);flex-shrink:0}
+
+/* ─── SHELL / HEADER ─── */
+.shell{width:100%;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.hdr{height:var(--hh);background:var(--v2);display:flex;align-items:center;gap:12px;padding:0 16px;flex-shrink:0;box-shadow:0 2px 18px rgba(4,20,30,.55);border-bottom:1px solid rgba(14,196,176,.12)}
+.ham{width:38px;height:38px;background:rgba(255,255,255,.09);border:1px solid rgba(14,196,176,.2);border-radius:9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4.5px;flex-shrink:0;transition:background .18s}
+.ham:hover{background:rgba(255,255,255,.18)}
+.ham span{display:block;width:16px;height:2px;background:#fff;border-radius:1px}
+.hdr-logo{flex:1;min-width:0;display:flex;align-items:center;overflow:hidden}
+.hdr-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.docact{display:none;gap:7px}
+.docact.on{display:flex}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:all .18s}
+.btn-dl{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.18)}
+.btn-dl:hover{background:rgba(255,255,255,.2)}
+.btn-sh{background:var(--ac);color:var(--v1);font-weight:700}
+.btn-sh:hover{background:var(--a2);color:#fff}
+
+/* ─── CONTENT AREA ─── */
+.content{flex:1;overflow:hidden;position:relative;background:var(--bg)}
+
+/* ─── SHARED VIEW BASE ─── */
+/* All views: position:absolute; inset:0; */
+.view{position:absolute;inset:0;overflow-y:auto;background:var(--bg);display:none}
+.view.on{display:block}
+
+/* ─── HOME ─── */
+#homeView{padding:20px 16px 48px}
+#homeView::-webkit-scrollbar{width:5px}
+#homeView::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+.hero{width:100%;border-radius:16px;overflow:hidden;margin-bottom:20px;box-shadow:0 6px 28px rgba(4,20,30,.22)}
+.hero svg{width:100%;height:auto;display:block}
+.welcome{margin-bottom:18px}
+.welcome h1{font-size:22px;font-weight:800;color:var(--tx);margin-bottom:8px;letter-spacing:-.4px}
+.welcome p{font-size:13.5px;color:var(--t2);line-height:1.72}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.stat{background:var(--sf);border:1.5px solid var(--bd);border-radius:12px;padding:14px 8px;text-align:center}
+.stat-n{font-size:26px;font-weight:800;color:var(--v4);line-height:1;margin-bottom:3px}
+.stat-l{font-size:10px;color:var(--t2);font-weight:500}
+.sec-lbl{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sec-lbl::after{content:'';flex:1;height:1.5px;background:var(--bd)}
+.dcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:18px}
+.dcard{background:var(--sf);border:1.5px solid var(--bd);border-radius:13px;padding:18px 16px;cursor:pointer;transition:all .22s;border-left:5px solid var(--v4)}
+.dcard:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(10,92,104,.15);border-left-color:var(--ac)}
+.dcard-ico{margin-bottom:11px}
+.dcard-name{font-size:14.5px;font-weight:700;color:var(--tx);margin-bottom:4px}
+.dcard-desc{font-size:11.5px;color:var(--t2);line-height:1.5}
+.dcard-tag{display:inline-block;padding:3px 9px;background:#DCF5F2;color:var(--a2);border-radius:20px;font-size:10px;font-weight:700;margin-top:11px;border:1px solid rgba(14,196,176,.25)}
+.hint{padding:12px 15px;background:rgba(14,196,176,.07);border:1.5px solid rgba(14,196,176,.22);border-radius:11px;display:flex;align-items:flex-start;gap:10px;margin-bottom:18px}
+.hint p{font-size:13px;color:var(--t2);line-height:1.55;margin:0}
+.hint strong{color:var(--tx)}
+.coming-soon{background:var(--sf);border:1.5px solid var(--bd);border-radius:13px;padding:18px 16px;text-align:center;margin-bottom:20px}
+.coming-soon h3{font-size:14px;font-weight:700;color:var(--tx);margin-bottom:5px}
+.coming-soon p{font-size:12px;color:var(--t2);margin-bottom:14px}
+.folder-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.folder-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg);border:1.5px solid var(--bd);border-radius:20px;font-size:11.5px;font-weight:500;color:var(--t2)}
+.chip-dot{width:6px;height:6px;border-radius:50%;background:var(--bd);flex-shrink:0}
+.home-footer{border-top:1.5px solid var(--bd);padding-top:16px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.home-footer span{font-size:10.5px;color:var(--t3)}
+
+/* ─── DOC VIEW ─── */
+/* CRITICAL: position:absolute inset:0; flex column */
+#docView{position:absolute;inset:0;display:none;flex-direction:column;background:var(--sf)}
+#docView.on{display:flex}
+.doc-bar{background:var(--sf);border-bottom:1.5px solid var(--bd);padding:9px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;height:50px}
+.back-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;background:none;border:1.5px solid var(--bd);color:var(--t2);font-size:13px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .18s;flex-shrink:0;white-space:nowrap}
+.back-btn:hover{background:var(--bg);color:var(--tx);border-color:var(--v4)}
+.dbi{flex:1;min-width:0}
+.dbt{font-size:13.5px;font-weight:700;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dbc{font-size:10.5px;color:var(--t2)}
+#docFrame{flex:1;border:none;width:100%;min-height:0;display:block;background:#fff}
+
+/* ─── ES LIST VIEW ─── */
+#esListView{padding:0}
+.es-inner{overflow-y:auto;padding:16px 16px 40px;height:calc(100% - 50px)}
+.es-inner::-webkit-scrollbar{width:5px}
+.es-inner::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+.es-intro{font-size:13px;color:var(--t2);margin-bottom:16px;line-height:1.65}
+.es-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:11px}
+.es-card{background:var(--sf);border-radius:12px;border:1.5px solid var(--bd);padding:15px 13px;cursor:pointer;transition:all .22s;position:relative;overflow:hidden}
+.es-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(4,20,30,.14)}
+.es-card-bar{position:absolute;top:0;left:0;right:0;height:4px;border-radius:12px 12px 0 0}
+.es-card-icon{font-size:26px;margin-bottom:7px;line-height:1}
+.es-card-nr{font-size:9px;font-weight:700;letter-spacing:1px;color:var(--t3);margin-bottom:3px}
+.es-card-name{font-size:12px;font-weight:700;color:var(--tx);line-height:1.3;margin-bottom:4px}
+.es-card-stand{font-size:9.5px;color:var(--t3);line-height:1.3}
+
+/* ─── ES DETAIL VIEW ─── */
+/* CRITICAL FIX: position:absolute; inset:0; flex column; min-height:0 on scroll */
+#esDetailView{position:absolute;inset:0;display:none;flex-direction:column;background:var(--bg)}
+#esDetailView.on{display:flex}
+.es-bar{background:var(--sf);border-bottom:1.5px solid var(--bd);padding:9px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;height:50px}
+/* CRITICAL: flex:1 + min-height:0 = proper scroll inside flex */
+.es-scroll{flex:1;min-height:0;overflow-y:auto;background:var(--bg)}
+.es-scroll::-webkit-scrollbar{width:5px}
+.es-scroll::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+.es-hero{padding:22px 18px 20px;color:white;position:relative;overflow:hidden;flex-shrink:0}
+.es-hero::before{content:'';position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.07)}
+.es-hero::after{content:'';position:absolute;left:-20px;bottom:-20px;width:80px;height:80px;border-radius:50%;background:rgba(0,0,0,.08)}
+.es-hero-icon{font-size:36px;margin-bottom:10px;line-height:1;position:relative;z-index:1}
+.es-hero-nr{font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;opacity:.65;margin-bottom:4px;position:relative;z-index:1}
+.es-hero-title{font-size:17px;font-weight:800;line-height:1.3;margin-bottom:12px;position:relative;z-index:1}
+.es-chips{display:flex;flex-wrap:wrap;gap:6px;position:relative;z-index:1}
+.es-chip{display:inline-flex;padding:4px 10px;background:rgba(255,255,255,.18);border-radius:20px;font-size:10px;font-weight:600;color:white;backdrop-filter:blur(4px)}
+.es-body{padding:16px 16px 36px}
+/* Ziel */
+.es-ziel{background:var(--sf);border-radius:11px;padding:14px 15px;margin-bottom:13px;border:1.5px solid var(--bd);border-left:4px solid var(--v4)}
+.es-ziel-lbl{font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--v4);margin-bottom:6px}
+.es-ziel p{font-size:13px;color:var(--t2);line-height:1.68}
+/* Criteria label */
+.crit-hd{font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--t3);margin-bottom:9px}
+/* Criteria items */
+.es-criteria{display:flex;flex-direction:column;gap:9px;margin-bottom:14px}
+.ec{background:var(--sf);border-radius:10px;border:1.5px solid var(--bd);overflow:hidden;display:flex;min-height:0}
+.ec-badge{width:36px;min-width:36px;display:flex;align-items:flex-start;justify-content:center;padding-top:13px;font-size:10px;font-weight:800;color:white;letter-spacing:.3px;flex-shrink:0}
+.ec-body{flex:1;padding:12px 12px 12px 4px;font-size:12.5px;color:var(--t2);line-height:1.62;min-width:0}
+.ec-body strong{color:var(--tx);display:block;font-size:10px;font-weight:700;margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px}
+/* Color coding S/P/E */
+.ec-s .ec-badge{background:#1565C0}.ec-s{border-left:4px solid #1565C0}
+.ec-p .ec-badge{background:#6A0DAD}.ec-p{border-left:4px solid #6A0DAD}
+.ec-e .ec-badge{background:#1E8449}.ec-e{border-left:4px solid #1E8449}
+/* Praxis box */
+.es-praxis{background:linear-gradient(135deg,rgba(14,196,176,.08),rgba(10,92,104,.05));border:1.5px solid rgba(14,196,176,.28);border-radius:11px;padding:14px 15px;margin-bottom:13px}
+.es-praxis-lbl{font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--ac);margin-bottom:6px}
+.es-praxis p{font-size:12.5px;color:var(--t2);line-height:1.65}
+/* Source */
+.es-src{background:var(--sf);border:1.5px solid var(--bd);border-radius:10px;padding:10px 14px;font-size:11.5px;color:var(--t3)}
+.es-src strong{color:var(--t2)}
+.es-src a{color:var(--ac)}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:#0B2028;color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 8px 28px rgba(4,20,30,.4);z-index:9999;display:flex;align-items:center;gap:8px;opacity:0;transform:translateY(12px);transition:all .28s cubic-bezier(.4,0,.2,1);pointer-events:none}
+.toast.on{opacity:1;transform:translateY(0)}
+.tok{color:var(--ok);font-size:15px}
+
+/* ANIMATIONS */
+@keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.hero{animation:fu .4s ease both}
+.welcome{animation:fu .4s .06s ease both}
+.stats{animation:fu .4s .12s ease both}
+.dcards{animation:fu .4s .18s ease both}
+.hint,.coming-soon,.home-footer{animation:fu .4s .24s ease both}
+@media(max-width:600px){
+  #homeView{padding:14px 12px 40px}
+  .welcome h1{font-size:19px}
+  .stat-n{font-size:22px}
+  .es-grid{grid-template-columns:repeat(auto-fill,minmax(136px,1fr));gap:9px}
+  .es-hero-title{font-size:15px}
+  .ec-body{font-size:12px}
+}
+</style>
+</head>
+<body>
+<div class="ov" id="ov" onclick="closeSB()"></div>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-top">
+    <div class="sb-brand">
+      <svg height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+  <defs>
+    <linearGradient id="ncg1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#09677A"/>
+      <stop offset="100%" stop-color="#043D4A"/>
+    </linearGradient>
+    <filter id="gs" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <!-- Background pill -->
+  <rect width="36" height="36" rx="9" fill="url(#ncg1)"/>
+  <!-- Subtle shine -->
+  <ellipse cx="12" cy="9" rx="14" ry="8" fill="rgba(255,255,255,0.07)"/>
+  <!-- CROSS — Cura (bold, solid white, rounded arms) -->
+  <rect x="14.5" y="11" width="7" height="20" rx="3.5" fill="white"/>
+  <rect x="8" y="17.5" width="20" height="7" rx="3.5" fill="white"/>
+  <!-- NOVA STAR — 4-pointed diamond star above cross center -->
+  <!-- Star points: top, right, bottom (hidden by cross), left -->
+  <path d="M18 7 L19.4 10 L22.5 8.5 L20 11.5 L23 13 L20 13 L18 17 L16 13 L13 13 L16 11.5 L13.5 8.5 L16.6 10 Z"
+        fill="#F5C518" opacity="0.95"/>
+</svg>
+      <div>
+        <div style="font-size:15px;font-weight:800;color:#fff;letter-spacing:-.3px">NovaCura</div>
+        <div style="font-size:9.5px;color:rgba(255,255,255,.38);margin-top:1px">Schulungsportal</div>
+      </div>
+    </div>
+    <button class="sb-close" onclick="closeSB()">&#10005;</button>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-sec">Dokumente</div>
+    <div class="fhd open" onclick="tF(this)"><div class="ico-fld"></div><span class="fl">Schulungen</span><span class="fc">&#8250;</span></div>
+    <div class="fbody open">
+      <div class="dlink" id="nav-sis" onclick="openDoc('sis',this)"><div class="ico-file"></div><span>SiS-Schulung</span></div>
+      <div class="dlink" id="nav-qpr" onclick="openDoc('qpr',this)"><div class="ico-file"></div><span>QPR-Schulung 2026</span></div>
+    </div>
+    <div class="fhd" onclick="tF(this)"><div class="ico-fld"></div><span class="fl">Arbeitsanweisung</span><span class="fc">&#8250;</span></div>
+    <div class="fbody"><div class="dlink ph">&#8722; Folgt demn&auml;chst&hellip;</div></div>
+    <div class="fhd" onclick="tF(this)"><div class="ico-fld"></div><span class="fl">Assessments</span><span class="fc">&#8250;</span></div>
+    <div class="fbody"><div class="dlink ph">&#8722; Folgt demn&auml;chst&hellip;</div></div>
+    <div class="fhd" onclick="tF(this)"><div class="ico-fld"></div><span class="fl">Formulare</span><span class="fc">&#8250;</span></div>
+    <div class="fbody"><div class="dlink ph">&#8722; Folgt demn&auml;chst&hellip;</div></div>
+    <div class="fhd open" onclick="tF(this)"><div class="ico-fld"></div><span class="fl">Richtlinien / Standards</span><span class="fc">&#8250;</span></div>
+    <div class="fbody open">
+      <div class="fhd open" onclick="tF(this)" style="font-size:12.5px;padding:7px 10px"><div class="ico-fld" style="transform:scale(.82)"></div><span class="fl">Expertenstandards (DNQP)</span><span class="fc">&#8250;</span></div>
+      <div class="fbody2 open">
+        <div class="es-sb-all" onclick="openESList()"><span style="font-size:13px">&#x1F4CB;</span><span>Alle 13 Standards</span></div>
+        <div class="es-sb-entry" id="nav-es-dekubitus" onclick="openES('dekubitus',this)"><span class="es-dot" style="background:#C0392B"></span><span>#01 Dekubitus</span></div>
+        <div class="es-sb-entry" id="nav-es-entlassung" onclick="openES('entlassung',this)"><span class="es-dot" style="background:#2471A3"></span><span>#02 Entlassung</span></div>
+        <div class="es-sb-entry" id="nav-es-schmerz-akut" onclick="openES('schmerz-akut',this)"><span class="es-dot" style="background:#E67E22"></span><span>#03 Schmerz (akut)</span></div>
+        <div class="es-sb-entry" id="nav-es-schmerz-chronisch" onclick="openES('schmerz-chronisch',this)"><span class="es-dot" style="background:#BA4A00"></span><span>#04 Schmerz (chronisch)</span></div>
+        <div class="es-sb-entry" id="nav-es-sturz" onclick="openES('sturz',this)"><span class="es-dot" style="background:#7D3C98"></span><span>#05 Sturzprophylaxe</span></div>
+        <div class="es-sb-entry" id="nav-es-harnkontinenz" onclick="openES('harnkontinenz',this)"><span class="es-dot" style="background:#148F77"></span><span>#06 Harnkontinenz</span></div>
+        <div class="es-sb-entry" id="nav-es-wunden" onclick="openES('wunden',this)"><span class="es-dot" style="background:#1E8449"></span><span>#07 Chronische Wunden</span></div>
+        <div class="es-sb-entry" id="nav-es-ernaehrung" onclick="openES('ernaehrung',this)"><span class="es-dot" style="background:#B7770D"></span><span>#08 Ernährung</span></div>
+        <div class="es-sb-entry" id="nav-es-demenz" onclick="openES('demenz',this)"><span class="es-dot" style="background:#6C3483"></span><span>#09 Demenz</span></div>
+        <div class="es-sb-entry" id="nav-es-mund" onclick="openES('mund',this)"><span class="es-dot" style="background:#117A65"></span><span>#10 Mundgesundheit</span></div>
+        <div class="es-sb-entry" id="nav-es-bewegung" onclick="openES('bewegung',this)"><span class="es-dot" style="background:#1A5276"></span><span>#11 Bewegung</span></div>
+        <div class="es-sb-entry" id="nav-es-geburt" onclick="openES('geburt',this)"><span class="es-dot" style="background:#CB4335"></span><span>#12 Physiolog. Geburt</span></div>
+        <div class="es-sb-entry" id="nav-es-lymphoedem" onclick="openES('lymphoedem',this)"><span class="es-dot" style="background:#1565C0"></span><span>#13 Lymphödem</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="sb-footer">NovaCura &middot; Schulungsportal &middot; ambulante Pflege</div>
+</aside>
+
+<!-- ═══ APP SHELL ═══ -->
+<div class="shell">
+  <header class="hdr">
+    <div class="ham" onclick="openSB()"><span></span><span></span><span></span></div>
+    <div class="hdr-logo"><svg height="44" viewBox="0 0 310 44" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ncg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#09677A"/>
+      <stop offset="100%" stop-color="#043D4A"/>
+    </linearGradient>
+  </defs>
+  <!-- Logo mark background -->
+  <rect x="0" y="4" width="36" height="36" rx="9" fill="url(#ncg2)"/>
+  <ellipse cx="12" cy="13" rx="14" ry="8" fill="rgba(255,255,255,0.07)"/>
+  <!-- Cross (Cura) -->
+  <rect x="14.5" y="15" width="7" height="20" rx="3.5" fill="white"/>
+  <rect x="8" y="21.5" width="20" height="7" rx="3.5" fill="white"/>
+  <!-- Nova star -->
+  <path d="M18 11 L19.4 14 L22.5 12.5 L20 15.5 L23 17 L20 17 L18 21 L16 17 L13 17 L16 15.5 L13.5 12.5 L16.6 14 Z"
+        fill="#F5C518" opacity="0.95"/>
+  <!-- Divider -->
+  <rect x="44" y="10" width="1.5" height="24" fill="rgba(255,255,255,.18)" rx="1"/>
+  <!-- Wordmark: Nova in light, Cura in bold teal-white -->
+  <text x="54" y="26" font-family="Outfit,sans-serif" font-size="20" fill="white" letter-spacing="-0.3">
+    <tspan font-weight="300">Nova</tspan><tspan font-weight="800">Cura</tspan>
+  </text>
+  <text x="54" y="38" font-family="Outfit,sans-serif" font-size="10" fill="rgba(255,255,255,.5)" letter-spacing="0.4">Schulungsportal &#xB7; ambulante Pflege</text>
+</svg></div>
+    <div class="hdr-actions">
+      <div class="docact" id="docact">
+        <button class="btn btn-dl" onclick="dlDoc()">&#8595; Download</button>
+        <button class="btn btn-sh" onclick="shDoc()">&#8599; Teilen</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- HOME -->
+    <div id="homeView" class="view on">
+      <div class="hero"><svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="hbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#041E26"/>
+      <stop offset="55%" stop-color="#073645"/>
+      <stop offset="100%" stop-color="#0A5C68"/>
+    </linearGradient>
+    <linearGradient id="hbg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0E7A8A"/><stop offset="100%" stop-color="#074F5E"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="200" fill="url(#hbg)"/>
+  <circle cx="800" cy="10" r="130" fill="rgba(14,122,138,.08)"/>
+  <circle cx="860" cy="200" r="160" fill="rgba(14,122,138,.05)"/>
+  <g fill="rgba(14,200,180,.15)">
+    <circle cx="650" cy="50" r="2.4"/><circle cx="670" cy="50" r="2.4"/><circle cx="690" cy="50" r="2.4"/>
+    <circle cx="650" cy="70" r="2.4"/><circle cx="670" cy="70" r="2.4"/><circle cx="690" cy="70" r="2.4"/>
+    <circle cx="650" cy="90" r="2.4"/><circle cx="670" cy="90" r="2.4"/><circle cx="690" cy="90" r="2.4"/>
+    <circle cx="650" cy="110" r="2.4"/><circle cx="670" cy="110" r="2.4"/><circle cx="690" cy="110" r="2.4"/>
+  </g>
+  <!-- NOVACURA logo mark: Cross (Cura) + Nova star -->
+  <rect x="42" y="44" width="56" height="56" rx="14" fill="url(#hbg2)" opacity=".88"/>
+  <ellipse cx="56" cy="56" rx="22" ry="13" fill="rgba(255,255,255,0.06)"/>
+  <!-- Cross arms (bold white, rounded) -->
+  <rect x="63" y="56" width="10" height="28" rx="5" fill="white"/>
+  <rect x="52" y="67" width="32" height="10" rx="5" fill="white"/>
+  <!-- Nova star (4-pointed, gold) above cross -->
+  <path d="M68 50 L70 55 L75 52.5 L71.5 57 L76.5 59 L71.5 59 L68 65 L64.5 59 L59.5 59 L64.5 57 L61 52.5 L66 55 Z"
+        fill="#F5C518" opacity="0.95"/>
+  <!-- Divider -->
+  <rect x="110" y="34" width="2" height="132" rx="1" fill="rgba(255,255,255,.14)"/>
+  <!-- Brand text -->
+  <text x="125" y="94" font-family="Outfit,sans-serif" font-size="56" font-weight="800" fill="white" letter-spacing="-2">NovaCura</text>
+  <text x="127" y="124" font-family="Outfit,sans-serif" font-size="15" fill="rgba(255,255,255,.72)" letter-spacing="1">Schulungsportal &middot; ambulante Pflege</text>  <!-- Doc stack -->
+  <rect x="744" y="42" width="74" height="96" rx="7" fill="rgba(255,255,255,.05)" stroke="rgba(14,200,180,.12)" stroke-width="1.5"/>
+  <rect x="756" y="30" width="74" height="96" rx="7" fill="rgba(255,255,255,.08)" stroke="rgba(14,200,180,.16)" stroke-width="1.5"/>
+  <rect x="770" y="18" width="76" height="98" rx="7" fill="rgba(255,255,255,.13)" stroke="rgba(14,200,180,.24)" stroke-width="1.5"/>
+  <rect x="786" y="33" width="46" height="4" rx="2" fill="rgba(14,200,180,.7)"/>
+  <rect x="786" y="44" width="46" height="4" rx="2" fill="rgba(255,255,255,.5)"/>
+  <rect x="786" y="55" width="34" height="4" rx="2" fill="rgba(255,255,255,.38)"/>
+  <rect x="786" y="66" width="40" height="4" rx="2" fill="rgba(255,255,255,.3)"/>
+  <rect x="786" y="77" width="28" height="4" rx="2" fill="rgba(255,255,255,.24)"/>
+  <rect x="786" y="88" width="36" height="4" rx="2" fill="rgba(255,255,255,.18)"/>
+  <polygon points="808,128 786,143 808,158 830,143" fill="rgba(14,200,180,.3)"/>
+  <polygon points="808,128 830,143 808,129" fill="rgba(14,200,180,.55)"/>
+  <rect x="828" y="136" width="3" height="18" rx="1.5" fill="rgba(14,200,180,.5)"/>
+  <circle cx="829.5" cy="156" r="4" fill="rgba(14,200,180,.4)"/>
+  <rect x="0" y="184" width="900" height="16" fill="rgba(0,0,0,.15)"/>
+</svg></div>
+      <div class="welcome">
+        <h1>Willkommen bei NovaCura</h1>
+        <p>Ihr digitales Schulungsportal f&#252;r die ambulante Pflege. &Ouml;ffnen Sie die Seitenleiste &#252;ber das Men&#252;-Symbol oben links oder starten Sie direkt mit einem der Inhalte.</p>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-n">2</div><div class="stat-l">Schulungen</div></div>
+        <div class="stat"><div class="stat-n">13</div><div class="stat-l">Expertenstandards</div></div>
+        <div class="stat"><div class="stat-n" style="font-size:17px;padding-top:5px">06/25</div><div class="stat-l">Aktueller Stand</div></div>
+      </div>
+      <div class="sec-lbl">&#128230; Verf&#252;gbare Inhalte</div>
+      <div class="dcards">
+        <div class="dcard" onclick="openDoc('sis',document.getElementById('nav-sis'))">
+          <div class="dcard-ico" style="font-size:30px">&#x1F4CB;</div>
+          <div class="dcard-name">SiS-Schulung</div>
+          <div class="dcard-desc">Strukturierte Informationssammlung &middot; 16 Folien</div>
+          <div class="dcard-tag">Schulung</div>
+        </div>
+        <div class="dcard" onclick="openDoc('qpr',document.getElementById('nav-qpr'))">
+          <div class="dcard-ico">
+            <svg width="46" height="52" viewBox="0 0 46 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Clipboard body -->
+              <rect x="3" y="7" width="40" height="45" rx="5" fill="#DCF5F2" stroke="#0A9E8E" stroke-width="1.5"/>
+              <!-- Clipboard top bar -->
+              <rect x="3" y="7" width="40" height="10" rx="5" fill="#0A9E8E"/>
+              <rect x="3" y="12" width="40" height="5" fill="#0A9E8E"/>
+              <!-- Clip -->
+              <rect x="16" y="3" width="14" height="9" rx="4" fill="#065F55" stroke="#065F55" stroke-width="1"/>
+              <rect x="19" y="5" width="8" height="5" rx="2.5" fill="#DCF5F2"/>
+              <!-- Check rows -->
+              <!-- Row 1: checkmark -->
+              <circle cx="12" cy="24" r="4" fill="#0A9E8E" opacity=".18"/>
+              <polyline points="9.5,24 11.5,26.2 15,21.8" stroke="#0A9E8E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              <rect x="19" y="22" width="18" height="2.5" rx="1.25" fill="#0A9E8E" opacity=".4"/>
+              <rect x="19" y="26" width="12" height="2" rx="1" fill="#0A9E8E" opacity=".25"/>
+              <!-- Row 2: checkmark -->
+              <circle cx="12" cy="35" r="4" fill="#0A9E8E" opacity=".18"/>
+              <polyline points="9.5,35 11.5,37.2 15,32.8" stroke="#0A9E8E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              <rect x="19" y="33" width="18" height="2.5" rx="1.25" fill="#0A9E8E" opacity=".4"/>
+              <rect x="19" y="37" width="10" height="2" rx="1" fill="#0A9E8E" opacity=".25"/>
+              <!-- Row 3: pending (empty circle) -->
+              <circle cx="12" cy="46" r="4" fill="none" stroke="#0A9E8E" stroke-width="1.5" opacity=".45"/>
+              <rect x="19" y="44" width="18" height="2.5" rx="1.25" fill="#0A9E8E" opacity=".25"/>
+              <rect x="19" y="48" width="14" height="2" rx="1" fill="#0A9E8E" opacity=".18"/>
+              <!-- Star badge (QPR 2026) -->
+              <circle cx="38" cy="38" r="8" fill="#F5C842" stroke="white" stroke-width="1.5"/>
+              <text x="38" y="42" font-family="Outfit,sans-serif" font-size="7.5" font-weight="800" fill="#3A2800" text-anchor="middle">26</text>
+            </svg>
+          </div>
+          <div class="dcard-name">QPR-Schulung 2026</div>
+          <div class="dcard-desc">Qualit&#228;tspr&#252;fungsrichtlinien ab 01.07.2026 &middot; 9 Folien</div>
+          <div class="dcard-tag">Schulung</div>
+        </div>
+        <div class="dcard" onclick="openESList()" style="border-left-color:#1565C0">
+          <div class="dcard-ico" style="font-size:30px">&#x1F4DA;</div>
+          <div class="dcard-name">DNQP Expertenstandards</div>
+          <div class="dcard-desc">Alle 13 nationalen Pflegestandards &middot; Klinische Referenz</div>
+          <div class="dcard-tag" style="background:#E3EFF8;color:#1565C0;border-color:rgba(21,101,192,.2)">Richtlinien</div>
+        </div>
+      </div>
+      <div class="hint">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="flex-shrink:0;margin-top:1px"><circle cx="10" cy="10" r="9" stroke="#0EC4B0" stroke-width="1.5"/><rect x="9" y="9" width="2" height="6" rx="1" fill="#0EC4B0"/><circle cx="10" cy="6.5" r="1" fill="#0EC4B0"/></svg>
+        <p><strong>Navigation:</strong> In den Pr&#228;sentationen nach links / rechts wischen zum Bl&#228;ttern. Expertenstandards &#252;ber Seitenleiste &#8594; Richtlinien / Standards.</p>
+      </div>
+      <div class="coming-soon">
+        <h3>Weitere Inhalte folgen</h3>
+        <p>Diese Bereiche werden sukzessive bef&#252;llt</p>
+        <div class="folder-chips">
+          <div class="folder-chip"><span class="chip-dot"></span>Arbeitsanweisung</div>
+          <div class="folder-chip"><span class="chip-dot"></span>Assessments</div>
+          <div class="folder-chip"><span class="chip-dot"></span>Formulare</div>
+        </div>
+      </div>
+      <div class="home-footer"><span>NovaCura &middot; Schulungsportal &middot; ambulante Pflege</span></div>
+    </div>
+
+    <!-- DOC VIEW -->
+    <div id="docView">
+      <div class="doc-bar">
+        <button class="back-btn" onclick="goHome()">&#8592; Zur&uuml;ck</button>
+        <div class="dbi"><div class="dbt" id="dvT"></div><div class="dbc" id="dvC"></div></div>
+      </div>
+      <iframe id="docFrame" title="Schulungsinhalt"></iframe>
+    </div>
+
+    <!-- ES LIST VIEW -->
+    <div id="esListView" class="view">
+      <div class="doc-bar">
+        <button class="back-btn" onclick="goHome()">&#8592; Zur&uuml;ck</button>
+        <div class="dbi"><div class="dbt">DNQP Expertenstandards</div><div class="dbc">Richtlinien / Standards &middot; 13 nationale Pflegestandards</div></div>
+      </div>
+      <div class="es-inner">
+        <p class="es-intro">Die nationalen Expertenstandards des DNQP definieren den Stand des Wissens f&#252;r ausgew&#228;hlte Pflegeph&#228;nomene. Tippen Sie auf einen Standard f&#252;r die vollst&#228;ndigen Kriterien und Praxishinweise.</p>
+        <div class="es-grid">
+          <div class="es-card" onclick="openES('dekubitus')">
+            <div class="es-card-bar" style="background:#C0392B"></div>
+            <div class="es-card-icon">🛏️</div>
+            <div class="es-card-nr">ES #01</div>
+            <div class="es-card-name">Dekubitus</div>
+            <div class="es-card-stand">2. Aktualisierung 2017</div>
+          </div>
+          <div class="es-card" onclick="openES('entlassung')">
+            <div class="es-card-bar" style="background:#2471A3"></div>
+            <div class="es-card-icon">🏥</div>
+            <div class="es-card-nr">ES #02</div>
+            <div class="es-card-name">Entlassung</div>
+            <div class="es-card-stand">2. Aktualisierung 2019</div>
+          </div>
+          <div class="es-card" onclick="openES('schmerz-akut')">
+            <div class="es-card-bar" style="background:#E67E22"></div>
+            <div class="es-card-icon">⚡</div>
+            <div class="es-card-nr">ES #03</div>
+            <div class="es-card-name">Schmerz (akut)</div>
+            <div class="es-card-stand">2. Aktualisierung 2020</div>
+          </div>
+          <div class="es-card" onclick="openES('schmerz-chronisch')">
+            <div class="es-card-bar" style="background:#BA4A00"></div>
+            <div class="es-card-icon">🌡️</div>
+            <div class="es-card-nr">ES #04</div>
+            <div class="es-card-name">Schmerz (chronisch)</div>
+            <div class="es-card-stand">1. Aktualisierung 2020</div>
+          </div>
+          <div class="es-card" onclick="openES('sturz')">
+            <div class="es-card-bar" style="background:#7D3C98"></div>
+            <div class="es-card-icon">⚠️</div>
+            <div class="es-card-nr">ES #05</div>
+            <div class="es-card-name">Sturzprophylaxe</div>
+            <div class="es-card-stand">2. Aktualisierung 2022</div>
+          </div>
+          <div class="es-card" onclick="openES('harnkontinenz')">
+            <div class="es-card-bar" style="background:#148F77"></div>
+            <div class="es-card-icon">💧</div>
+            <div class="es-card-nr">ES #06</div>
+            <div class="es-card-name">Harnkontinenz</div>
+            <div class="es-card-stand">2. Aktualisierung 2022</div>
+          </div>
+          <div class="es-card" onclick="openES('wunden')">
+            <div class="es-card-bar" style="background:#1E8449"></div>
+            <div class="es-card-icon">🩹</div>
+            <div class="es-card-nr">ES #07</div>
+            <div class="es-card-name">Chronische Wunden</div>
+            <div class="es-card-stand">2. Aktualisierung 2022</div>
+          </div>
+          <div class="es-card" onclick="openES('ernaehrung')">
+            <div class="es-card-bar" style="background:#B7770D"></div>
+            <div class="es-card-icon">🍲</div>
+            <div class="es-card-nr">ES #08</div>
+            <div class="es-card-name">Ernährung</div>
+            <div class="es-card-stand">2. Aktualisierung 2023</div>
+          </div>
+          <div class="es-card" onclick="openES('demenz')">
+            <div class="es-card-bar" style="background:#6C3483"></div>
+            <div class="es-card-icon">🧠</div>
+            <div class="es-card-nr">ES #09</div>
+            <div class="es-card-name">Demenz</div>
+            <div class="es-card-stand">1. Aktualisierung 2023</div>
+          </div>
+          <div class="es-card" onclick="openES('mund')">
+            <div class="es-card-bar" style="background:#117A65"></div>
+            <div class="es-card-icon">🦷</div>
+            <div class="es-card-nr">ES #10</div>
+            <div class="es-card-name">Mundgesundheit</div>
+            <div class="es-card-stand">Erstveröffentlichung 2022</div>
+          </div>
+          <div class="es-card" onclick="openES('bewegung')">
+            <div class="es-card-bar" style="background:#1A5276"></div>
+            <div class="es-card-icon">🚶</div>
+            <div class="es-card-nr">ES #11</div>
+            <div class="es-card-name">Bewegung</div>
+            <div class="es-card-stand">1. Aktualisierung 2023</div>
+          </div>
+          <div class="es-card" onclick="openES('geburt')">
+            <div class="es-card-bar" style="background:#CB4335"></div>
+            <div class="es-card-icon">🤱</div>
+            <div class="es-card-nr">ES #12</div>
+            <div class="es-card-name">Physiolog. Geburt</div>
+            <div class="es-card-stand">Erstveröffentlichung 2014</div>
+          </div>
+          <div class="es-card" onclick="openES('lymphoedem')">
+            <div class="es-card-bar" style="background:#1565C0"></div>
+            <div class="es-card-icon">🩸</div>
+            <div class="es-card-nr">ES #13</div>
+            <div class="es-card-name">Lymphödem</div>
+            <div class="es-card-stand">Erstveröffentlichung 2023</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ES DETAIL VIEW -->
+    <div id="esDetailView">
+      <div class="es-bar">
+        <button class="back-btn" onclick="goESList()">&#8592; Standards</button>
+        <div class="dbi"><div class="dbt" id="esT"></div><div class="dbc" id="esC"></div></div>
+      </div>
+      <div class="es-scroll">
+        <div class="es-hero" id="esHero">
+          <div class="es-hero-icon" id="esIcon"></div>
+          <div class="es-hero-nr" id="esNr"></div>
+          <div class="es-hero-title" id="esTitle2"></div>
+          <div class="es-chips" id="esChips"></div>
+        </div>
+        <div class="es-body">
+          <div class="es-ziel"><div class="es-ziel-lbl">&#127919; Ziel des Standards</div><p id="esZiel"></p></div>
+          <div class="crit-hd">Kriterien (S = Struktur &middot; P = Prozess &middot; E = Ergebnis)</div>
+          <div class="es-criteria" id="esCrit"></div>
+          <div class="es-praxis"><div class="es-praxis-lbl">&#9989; Praxishinweis ambulante Pflege</div><p id="esPraxis"></p></div>
+          <div class="es-src"><strong>Quelle &amp; Herausgeber:</strong> Deutsches Netzwerk f&#252;r Qualit&#228;tsentwicklung in der Pflege (DNQP), Hochschule Osnabr&#252;ck &middot; <a href="https://www.dnqp.de" target="_blank">www.dnqp.de</a></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /shell -->
+
+<div class="toast" id="toast"><span class="tok">&#10003;</span><span id="toastMsg"></span></div>
+
+<script>
+/* ── FA patch ── */
+var FPX=['fa-solid','fa-regular','fa-brands','fa-light','fa-thin'];
+var FM={'fa-arrow-right':'\u2192','fa-arrow-left':'\u2190','fa-house-medical':'\uD83C\uDFE5','fa-magnifying-glass-chart':'\uD83D\uDD0D','fa-vial-medical':'\uD83D\uDC89','fa-hand-holding-medical':'\uD83D\uDC8A','fa-hospital':'\uD83C\uDFE5','fa-circle-check':'\u2713','fa-square-check':'\u2611','fa-calendar-check':'\u2705','fa-check-double':'\u2705','fa-triangle-exclamation':'\u26A0','fa-exclamation':'!','fa-question':'?','fa-pen-to-square':'\u270F','fa-signature':'\u270D','fa-file-waveform':'\uD83D\uDCCB','fa-arrows-rotate':'\uD83D\uDD04','fa-play':'\u25B6','fa-reply':'\u21A9','fa-chart-line':'\uD83D\uDCC8','fa-link':'\uD83D\uDD17','fa-plus':'+','fa-phone':'\uD83D\uDCDE','fa-headset':'\uD83C\uDFA7','fa-comments':'\uD83D\uDCAC','fa-user-lock':'\uD83D\uDD12','fa-shoe-prints':'\uD83D\uDC63','fa-calendar-day':'\uD83D\uDCC5','fa-clock':'\u23F0','fa-music':'\uD83C\uDFB5','fa-shield-halved':'\uD83D\uDEE1','fa-bed':'\uD83D\uDECF','fa-mug-hot':'\u2615'};
+function pFA(h){
+  h=h.replace(/<link[^>]*font-awesome[^>]*>/gi,'');
+  h=h.replace(/<i\s+([^>]*)>\s*<\/i>/gi,function(m,a){
+    var cm=a.match(/class="([^"]*)"/);if(!cm)return m;
+    var ic=cm[1].split(/\s+/).find(function(c){return c.startsWith('fa-')&&FPX.indexOf(c)===-1});
+    if(!ic)return m;return'<i '+a+'>'+(FM[ic]||'&#9642;')+'</i>';
+  });return h;
+}
+
+/* ── Data ── */
+var ESL=[{"id": "dekubitus", "nr": "01", "titel": "Dekubitusprophylaxe in der Pflege", "kurz": "Dekubitus", "icon": "🛏️", "farbe": "#C0392B", "stand": "2. Aktualisierung 2017", "erst": "2000", "ziel": "Jeder Patient/Bewohner mit einem Dekubitusrisiko erhält eine dem Standard entsprechende Prophylaxe, die die Entstehung eines Dekubitus verhindert. Ist ein Dekubitus nicht vermeidbar, werden Maßnahmen zur Reduktion des Schweregrades und Erhalt der Lebensqualität eingeleitet.", "s": "Die Pflegefachkraft verfügt über aktuelles Wissen zur Einschätzung des Dekubitusrisikos, zur Hautbeobachtung sowie zu präventiven Maßnahmen und Behandlungsoptionen.", "p": [["P1", "Beurteilung des Dekubitusrisikos unmittelbar nach Aufnahme oder bei Veränderung anhand eines strukturierten Instruments (z. B. Norton, Braden) sowie durch klinisches Urteil."], ["P2", "Gefährdete erhalten ein individuelles Prophylaxeprogramm: Druckentlastung (Lagerung, Hilfsmittel), Bewegungsförderung, Hautpflege und Feuchtekontrolle."], ["P3", "Patient/Bewohner und Angehörige werden zu Risikofaktoren und prophylaktischen Maßnahmen informiert und angeleitet."]], "e": "Die Rate und der Schweregrad von Dekubiti sind auf das unvermeidbare Minimum reduziert. Bereits bestehende Dekubiti werden konsequent behandelt.", "praxis": "Regelmäßige Hautinspektion bei jedem Besuch dokumentieren. Lagerungsplan erstellen und Wechseldruckmatratze auf Funktionstüchtigkeit prüfen. Beratungsblatt bei Risiko ausfüllen."}, {"id": "entlassung", "nr": "02", "titel": "Entlassungsmanagement in der Pflege", "kurz": "Entlassung", "icon": "🏥", "farbe": "#2471A3", "stand": "2. Aktualisierung 2019", "erst": "2002", "ziel": "Patienten erhalten unmittelbar nach ihrer Entlassung aus dem Krankenhaus eine bedarfsgerechte Anschlussversorgung. Die Versorgungskontinuität ist gewährleistet.", "s": "Die Einrichtung verfügt über schriftliche Regelungen zum Entlassungsmanagement sowie Kooperationsvereinbarungen mit ambulanten und stationären Einrichtungen.", "p": [["P1", "Frühzeitige Einschätzung des poststationären Versorgungsbedarfs – spätestens innerhalb von 24 Stunden nach Aufnahme."], ["P2", "Entlassungsplanung in Abstimmung mit Patient/Angehörigen, ärztlichem Dienst und weiteren Berufsgruppen."], ["P3", "Sicherstellung, dass alle erforderlichen Informationen und Dokumente für die weiterversorgenden Einrichtungen übergeben werden."]], "e": "Bedarfsgerechte Anschlussversorgung ist rechtzeitig vor der Entlassung sichergestellt. Kein ungeplanter Rückkehrkontakt durch mangelnde Entlassungsplanung.", "praxis": "Bei Krankenhausüberleitung: SIS und Pflegedokumentation übergeben. Arztbrief anfordern. Hilfsmittelversorgung sicherstellen. Neuaufnahme-SIS innerhalb 3 Wochen erstellen."}, {"id": "schmerz-akut", "nr": "03", "titel": "Schmerzmanagement in der Pflege bei akuten Schmerzen", "kurz": "Schmerz (akut)", "icon": "⚡", "farbe": "#E67E22", "stand": "2. Aktualisierung 2020", "erst": "2005", "ziel": "Patienten/Bewohner mit akuten oder zu erwartenden Schmerzen erhalten ein dem aktuellen Wissensstand entsprechendes Schmerzmanagement, das einer Chronifizierung von Schmerzen entgegenwirkt.", "s": "Pflegefachkräfte verfügen über Kenntnisse in der Schmerzeinschätzung, in pharmakologischen und nichtpharmakologischen Methoden sowie in der Wirksamkeits- und Nebenwirkungskontrolle.", "p": [["P1", "Schmerzeinschätzung bei Aufnahme und bei jeder Veränderung mit einem validierten Instrument (NRS 0–10, VAS, BESD bei Demenz)."], ["P2", "Einleitung der Schmerzbehandlung gemäß ärztlicher Anordnung; Anwendung nichtpharmakologischer Maßnahmen (Kälte/Wärme, Lagerung)."], ["P3", "Kontrolle der Schmerzbehandlung auf Wirksamkeit und Nebenwirkungen. Rückmeldung an den Arzt bei NRS ≥ 5 oder unzureichender Wirkung."], ["P4", "Patient/Angehörige werden über Schmerzmedikamente, Wirkweise und korrekte Einnahme informiert und angeleitet."]], "e": "Patient/Bewohner ist schmerzfrei oder hat eine akzeptable Schmerzintensität (NRS ≤ 3/10). Akuter Schmerz ist nicht chronifiziert.", "praxis": "NRS vor und nach Bedarfsmedikation dokumentieren. Bei NRS > 3 Hausarzt informieren. Schmerzprotokoll führen. Wirkungseintritt nach 30–60 Min. kontrollieren und dokumentieren."}, {"id": "schmerz-chronisch", "nr": "04", "titel": "Schmerzmanagement in der Pflege bei chronischen Schmerzen", "kurz": "Schmerz (chronisch)", "icon": "🌡️", "farbe": "#BA4A00", "stand": "1. Aktualisierung 2020", "erst": "2014", "ziel": "Patienten/Bewohner mit chronischen Schmerzen erhalten ein individuelles Schmerzmanagement zur Minderung schmerzbedingter Beeinträchtigungen und Förderung der Lebensqualität.", "s": "Pflegefachkräfte verfügen über Kenntnisse zu chronischen Schmerzen, Schmerzmessung, multimodalen Therapieoptionen und Selbstmanagement-Förderung.", "p": [["P1", "Differenzierte Schmerzanamnese: Schmerzmuster, Lokalisation, beeinflussende Faktoren und bisherige Schmerzbehandlung. Einschätzung mit validiertem Instrument (NRS, VAS, DOLOPLUS-2)."], ["P2", "Regelmäßige Verlaufsbeurteilung bei jedem Besuch bei Risiko. Schmerzdokumentation im Schmerzprotokoll."], ["P3", "Nichtpharmakologische Strategien: Lagerung, Wärme/Kälte, TENS, Entspannungsverfahren, Tagesstrukturierung."], ["P4", "Unterstützung des Selbstmanagements: Information, Schulung und Anleitung zu Schmerzbewältigung und Medikamentenmanagement."]], "e": "Schmerzbedingte Beeinträchtigungen bei Aktivitäten des täglichen Lebens sind minimiert. Selbstmanagement ist gefördert. Lebensqualität verbessert oder erhalten.", "praxis": "Schmerzprotokoll (VAS/NRS) zur rechtssicheren Verlaufsdokumentation führen. Bei chronischen Schmerzen: Bedarfsmedikation 30 Min. vor Pflege prüfen und Wirkung dokumentieren."}, {"id": "sturz", "nr": "05", "titel": "Sturzprophylaxe in der Pflege", "kurz": "Sturzprophylaxe", "icon": "⚠️", "farbe": "#7D3C98", "stand": "2. Aktualisierung 2022", "erst": "2006", "ziel": "Patienten/Bewohner mit einem Sturzrisiko erhalten eine dem Standard entsprechende Sturzprophylaxe, um Sturzereignisse und sturzbedingte Verletzungen zu minimieren.", "s": "Pflegefachkräfte kennen sturzrelevante Risikofaktoren (intrinsisch/extrinsisch) und evidenzbasierte prophylaktische Maßnahmen.", "p": [["P1", "Strukturierte Einschätzung des Sturzrisikos bei Aufnahme und bei Veränderung (klinisches Urteil, ggf. STRATIFY, Timed-Up-and-Go). Einbeziehung der Sturzhistorie."], ["P2", "Individuelle Prophylaxemaßnahmen: Bewegungsförderung/Gleichgewichtstraining, sichere Wohnraumgestaltung, Hilfsmittelversorgung (Rollator, Haltegriffe), geeignetes Schuhwerk."], ["P3", "Beratung und Schulung von Patient/Angehörigen zu sturzfördernden Risikofaktoren und sicheren Verhaltensweisen."]], "e": "Sturzrate und Sturz-Inzidenz sind auf das unvermeidbare Minimum reduziert. Sturzfolgen (Verletzungen, Angst) sind minimiert.", "praxis": "Transfersicherheit bei jedem Besuch einschätzen. Rollator-Kontrolle. Teppiche/Schwellen dokumentieren. Nach Sturzereignis: Dokumentation, ärztliche Abklärung, SIS aktualisieren."}, {"id": "harnkontinenz", "nr": "06", "titel": "Förderung der Harnkontinenz in der Pflege", "kurz": "Harnkontinenz", "icon": "💧", "farbe": "#148F77", "stand": "2. Aktualisierung 2022", "erst": "2007", "ziel": "Pflegebedürftige mit Harninkontinenz oder einem Inkontinenzrisiko erhalten ein individuelles Kontinenzmanagement zur Förderung oder Erhaltung der Kontinenz.", "s": "Pflegefachkräfte verfügen über Kenntnisse zu Kontinenzprofilen, Inkontinenzformen und evidenzbasierten Fördermaßnahmen.", "p": [["P1", "Kontinenzanamnese und Einschätzung des Kontinenzprofils (Kontinenz, abhängige Kontinenz, kompensierte/nicht kompensierte Inkontinenz) bei Aufnahme und bei Veränderung."], ["P2", "Individuelle Maßnahmen: Blasentraining, Miktionsprotokoll, Toilettenangebote, Beckenbodentraining, Trinkmengenoptimierung, Hilfsmittelversorgung."], ["P3", "Beratung und Anleitung zu inkontinenzbezogenen Fragen (Inkontinenzmaterial, Hautpflege, Trinkverhalten)."]], "e": "Kontinenzstatus ist erhalten oder verbessert. Inkontinenz ist kompensiert. Lebensqualität und soziale Teilhabe sind gefördert.", "praxis": "Inkontinenzmaterial dokumentieren. Bei unkompensierter Inkontinenz: Toilettenstuhl, Miktionsprotokoll, Beratungsblatt. KS-Versorgung mit Kontinenzförderung kombinieren."}, {"id": "wunden", "nr": "07", "titel": "Pflege von Menschen mit chronischen Wunden", "kurz": "Chronische Wunden", "icon": "🩹", "farbe": "#1E8449", "stand": "2. Aktualisierung 2022", "erst": "2008", "ziel": "Patienten/Bewohner mit chronischen Wunden erhalten eine dem Standard entsprechende Wundversorgung, die die Wundheilung unterstützt und die Lebensqualität fördert.", "s": "Pflegefachkräfte verfügen über Kenntnisse zur Einschätzung und Behandlung chronischer Wunden sowie zur Wunddokumentation.", "p": [["P1", "Differenzierte Wundeinschätzung: Wundart, -lokalisation, -größe (Photodokumentation), Wundzustand (Exsudat, Belag, Infektion), Wundumgebung, Schmerz."], ["P2", "Wundversorgung gemäß ärztlichem Versorgungsplan: Wundreinigung, feuchte Wundversorgung, aseptische Bedingungen."], ["P3", "Wunddokumentation mind. wöchentlich; bei infizierten Wunden bei jedem Verbandwechsel. Bei Verschlechterung: umgehend ärztliche Rücksprache."], ["P4", "Beratung von Patient/Angehörigen zu Wundversorgung, Kompressionstherapie, Ernährung und entlastendem Verhalten."]], "e": "Wundheilung ist gefördert oder ein stabiler Wundzustand ist erreicht. Infektionen sind frühzeitig erkannt. Lebensqualität ist erhalten.", "praxis": "Wunddoku 1x wöchentlich, bei Infektion bei jedem VW. Fotodokumentation. Kompressionstherapie nach AO. Arztbenachrichtigung bei Verschlechterung dokumentieren."}, {"id": "ernaehrung", "nr": "08", "titel": "Ernährungsmanagement in der Pflege", "kurz": "Ernährung", "icon": "🍲", "farbe": "#B7770D", "stand": "2. Aktualisierung 2023", "erst": "2010", "ziel": "Patienten/Bewohner erhalten ein dem Standard entsprechendes Ernährungsmanagement zur Sicherung und Förderung ihrer oralen Ernährung und zur Vermeidung von Mangelernährung.", "s": "Pflegefachkräfte verfügen über Kenntnisse zur Ernährungseinschätzung, zum Ernährungsmanagement und zu ernährungstherapeutischen Interventionen.", "p": [["P1", "Ernährungsscreening bei Aufnahme und bei Veränderung (MNA, MUST), BMI, Gewichtsverlauf, Schluckfunktion."], ["P2", "Individuelle Maßnahmen: Speisenanpassung (Konsistenz, Portionsgröße), angenehme Essensatmosphäre, Hilfsmittelversorgung, Einnahmezeiten."], ["P3", "Sicherung der Flüssigkeitszufuhr; Trinkmengendokumentation bei Risiko. Ggf. Trinknahrung nach ärztlicher Anordnung."], ["P4", "Beratung von Patient/Angehörigen zu ernährungsspezifischen Aspekten und Schutzmaßnahmen bei Dysphagie."]], "e": "Ernährungszustand ist erhalten oder verbessert. Gewicht stabil oder zunehmend. Dehydratation ist vermieden.", "praxis": "Gewichtskontrolle regelmäßig. Flüssigkeit: mind. 1,5 l/Tag anstreben. Bei Dysphagieverdacht: Hausarzt informieren. Trinknahrung (Fresubin) nach AO dokumentieren."}, {"id": "demenz", "nr": "09", "titel": "Beziehungsgestaltung in der Pflege von Menschen mit Demenz", "kurz": "Demenz", "icon": "🧠", "farbe": "#6C3483", "stand": "1. Aktualisierung 2023", "erst": "2018", "ziel": "Menschen mit Demenz erfahren im Pflegeprozess eine tragfähige, professionelle Beziehung, die ihr Wohlbefinden und ihre Lebensqualität fördert und erhält.", "s": "Pflegefachkräfte verfügen über Kompetenzen zur Beziehungsgestaltung: Demenzwissen, kommunikative Kompetenz, Kenntnis der Biografie des Patienten.", "p": [["P1", "Einschätzung des Beziehungsverhaltens, der Kommunikationsmöglichkeiten, Biografie und Ressourcen sowie des Unterstützungsbedarfs der Angehörigen."], ["P2", "Gestaltung einer individuellen und tragfähigen Beziehung: personzentrierter, validierender Umgang; Nutzung biografischer Informationen; strukturierter Tagesablauf."], ["P3", "Begleitung und Einbeziehung von Angehörigen; Kooperation mit Alzheimer-Gesellschaft, Tagespflege und anderen Unterstützungsangeboten."]], "e": "Wohlbefinden, Selbstbestimmung und Lebensqualität von Menschen mit Demenz sind nachweislich gefördert. Herausforderndes Verhalten ist reduziert.", "praxis": "Biografische Infos in SIS einpflegen. Ruhige Ansprache, einzelne Schritte erklären. Tagespflege und Alzheimer-Gesellschaft vermitteln. Angehörigengespräche dokumentieren."}, {"id": "mund", "nr": "10", "titel": "Erhaltung und Förderung der Mundgesundheit in der Pflege", "kurz": "Mundgesundheit", "icon": "🦷", "farbe": "#117A65", "stand": "Erstveröffentlichung 2022", "erst": "2022", "ziel": "Pflegebedürftige erhalten eine dem Standard entsprechende Unterstützung zur Erhaltung und Förderung ihrer Mundgesundheit und damit ihrer allgemeinen Gesundheit und Lebensqualität.", "s": "Pflegefachkräfte verfügen über Kenntnisse zur Einschätzung der Mundgesundheit und zu Maßnahmen der Mundpflege und -hygiene.", "p": [["P1", "Einschätzung der Mundgesundheit bei Aufnahme und bei Veränderung: Inspektion von Mund, Zahnhälfte, Prothesen, Schleimhäuten (z. B. OMAHA, BOAS)."], ["P2", "Individuelle Mundpflegemaßnahmen: tägliche Mundinspektion, Zähne/Prothesen reinigen, Mundschleimhautpflege, Lippencare."], ["P3", "Beratung von Patient/Angehörigen zu Mundhygiene, Zahnarztkontrolle, Prothesenversorgung und Mundtrockenheit."]], "e": "Mundgesundheit ist erhalten oder verbessert. Mundhöhleninfektionen sind frühzeitig erkannt. Regelmäßige Zahnarztkontrollen sind sichergestellt.", "praxis": "Bei jedem Besuch Mundinspektion. Hörgeräte/Prothesen-Pflege dokumentieren. Mundtrockenheit bei Medikamenten beachten. Zahnarzttermin empfehlen und koordinieren."}, {"id": "bewegung", "nr": "11", "titel": "Förderung der Bewegungskompetenzen in der Pflege", "kurz": "Bewegung", "icon": "🚶", "farbe": "#1A5276", "stand": "1. Aktualisierung 2023", "erst": "2020", "ziel": "Pflegebedürftige werden individuell in der Erhaltung und Förderung ihrer Bewegungskompetenzen unterstützt und erhalten Angebote zur Bewegungsförderung.", "s": "Pflegefachkräfte verfügen über Kenntnisse zu Bewegungsförderung, aktivierend-rehabilitativer Pflege und Hilfsmittelversorgung.", "p": [["P1", "Einschätzung der Bewegungskompetenzen und -ressourcen (Transfers, Mobilität, Kontrakturgefahr, Gleichgewicht, Ausdauer) bei Aufnahme und bei Veränderung."], ["P2", "Individuelle Fördermaßnahmen: aktivierende Pflege, gezielte Übungen, Spaziergänge, Hilfsmittelversorgung (Rollator, Lifter)."], ["P3", "Beratung und Anleitung von Patient/Angehörigen zu bewegungsfördernden Alltagsaktivitäten und sicherer Mobilisation."]], "e": "Bewegungskompetenzen sind erhalten oder verbessert. Kontrakturen sind vermieden. Selbstständigkeit bei Mobilität und Transfers ist gefördert.", "praxis": "Lagerungsplan bei Immobilität führen. Kontrakturprophylaxe dokumentieren. Deprivationsprophylaxe: Bewegung, Kontakte, strukturierter Tagesablauf. Lifter-Nutzung dokumentieren."}, {"id": "geburt", "nr": "12", "titel": "Förderung der physiologischen Geburt", "kurz": "Physiolog. Geburt", "icon": "🤱", "farbe": "#CB4335", "stand": "Erstveröffentlichung 2014", "erst": "2014", "ziel": "Frauen mit einer physiologischen Schwangerschaft und Geburt erhalten professionelle Unterstützung, die physiologische Prozesse fördert und unnötige Interventionen vermeidet.", "s": "Hebammen und Pflegefachkräfte verfügen über Kompetenzen zur Unterstützung physiologischer Geburtsprozesse und zur Risikodifferenzierung.", "p": [["P1", "Einschätzung des Geburtsfortschritts; Differenzierung physiologisch vs. pathologisch."], ["P2", "Unterstützende Interventionen: Mobilisierung, Wasseranwendung, Atemtechniken, emotionale Unterstützung; Einbeziehung der Begleitperson."], ["P3", "Informierte Entscheidung der Frau bei allen Maßnahmen fördern."]], "e": "Die Geburt verläuft physiologisch mit minimalen Interventionen. Die Frau erlebt eine positive Geburtserfahrung bei sicherer Versorgung.", "praxis": "Hauptsächlich relevant für geburtshilfliche Einrichtungen. Im ambulanten Setting: Hebammenversorgung während Schwangerschaft und Wochenbett koordinieren."}, {"id": "lymphoedem", "nr": "13", "titel": "Lymphödemmanagement in der Pflege", "kurz": "Lymphödem", "icon": "🩸", "farbe": "#1565C0", "stand": "Erstveröffentlichung 2023", "erst": "2023", "ziel": "Pflegebedürftige mit primärem oder sekundärem Lymphödem erhalten ein dem Standard entsprechendes Lymphödemmanagement zur Reduktion des Ödems, Vermeidung von Komplikationen und Förderung der Lebensqualität.", "s": "Pflegefachkräfte verfügen über Grundkenntnisse zum Lymphödem, zu Stadien/Erscheinungsformen sowie zu Grundprinzipien der Komplexen Physikalischen Entstauungstherapie (KPE).", "p": [["P1", "Einschätzung des Lymphödems: Stadium (I–III), Lokalisation, Ausmaß, Hautveränderungen, Beschwerden."], ["P2", "Durchführung der KPE-Komponenten nach ärztlicher Anordnung: Manuelle Lymphdrainage (MLD), Kompressionstherapie (Bandagierung/Kompressionsstrumpf), Hautpflege, Bewegungstherapie."], ["P3", "Beratung und Anleitung zu Selbstmanagement: Selbstmassage, Kompressionsstrumpf anlegen, Hautpflege, Erkennen von Komplikationen (Erysipel)."]], "e": "Ödem ist reduziert oder stabil. Komplikationen (Erysipel, Fibrosen) sind vermieden. Selbstmanagement ist gefördert.", "praxis": "KS-Versorgung täglich dokumentieren. Kompressionsstrumpf korrekt anlegen (Lymphödem-indiziert). Hautpflege rückfettend. Bei Hautrötung/Schwellung: Erysipel? Sofort Arzt informieren."}];
+var ESM={};ESL.forEach(function(e){ESM[e.id]=e});
+var DOCS={};
+DOCS.sis={title:'SiS-Schulung',folder:'Schulungen',filename:'SiS-Schulung.html',html:"<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no\"><title>SIS-Schulung</title><link href=\"https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Lato:wght@400;700&display=swap\" rel=\"stylesheet\"><link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css\"><style>:root{--db:#005a70;--dp:#6c2d82;--da:#d9822b;--bg:#f4f7f8;--tx:#2d3748}*{box-sizing:border-box;margin:0;padding:0}html,body{width:100%;height:100%;overflow:hidden;background:var(--db);font-family:'Lato',sans-serif}.wrap{display:flex;width:100%;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}.slide{flex:0 0 100%;width:100%;height:100%;scroll-snap-align:start;background:#fff;display:flex;flex-direction:column;padding:40px 25px;position:relative;overflow-y:auto;border-right:1px solid #edf2f7}.slide::before{content:'';position:absolute;top:0;left:0;width:100%;height:12px;background:linear-gradient(90deg,var(--db),var(--dp));z-index:10}.sf{margin-top:auto;padding-top:15px;border-top:1px solid #edf2f7;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#a0aec0}h1{font-family:'Poppins',sans-serif;color:var(--db);font-size:30px;margin-bottom:10px}h2{font-family:'Poppins',sans-serif;color:var(--dp);font-size:18px;margin-bottom:15px;border-bottom:2px solid var(--da);padding-bottom:5px;display:inline-block}h3{font-family:'Poppins',sans-serif;color:var(--db);font-size:16px;margin:10px 0 5px;font-weight:700}p,li{color:var(--tx);font-size:13.5px;line-height:1.45;margin-bottom:6px}strong{color:#000}.tile{background:var(--bg);border-radius:8px;padding:12px;margin-bottom:12px;border-left:4px solid var(--db)}.purple-tile{border-left-color:var(--dp);background:#f9f5fa}.alert-box{background:#fff5ed;border:1px solid #ffe3c4;border-left:5px solid var(--da);padding:12px;margin:12px 0;border-radius:4px}table{width:100%;border-collapse:collapse;margin-top:8px;font-size:11.5px}th{background:var(--db);color:#fff;padding:8px;text-align:left}td{padding:8px;border:1px solid #e2e8f0;vertical-align:top;line-height:1.35}.il{list-style:none}.il li{position:relative;padding-left:25px;margin-bottom:10px}.il i{position:absolute;left:0;top:2px;color:var(--dp);font-size:16px}.tl{background:var(--bg);padding:15px;border-radius:8px;margin:15px 0;border:1px solid #e2e8f0}.tlb{position:relative;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.tll{position:absolute;left:0;right:0;height:3px;background:#cbd5e1;z-index:1}.tln{display:flex;flex-direction:column;align-items:center;position:relative;z-index:2}.tld{width:14px;height:14px;background:var(--da);border:3px solid #fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.15)}.blue{background:var(--db)}.tlx{margin-top:4px;font-size:11px;font-weight:bold;color:var(--db)}.sh{position:fixed;bottom:20px;right:20px;background:var(--da);color:#fff;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:bold;box-shadow:0 3px 8px rgba(0,0,0,.25);z-index:1000;pointer-events:none}</style></head><body><div class=\"sh\">Wischen <i class=\"fa-solid fa-arrow-right\"></i></div><div class=\"wrap\"><section class=\"slide\"><div style=\"margin:auto;text-align:center;width:100%\"><div style=\"background:var(--bg);display:inline-block;padding:25px;border-radius:50%;margin-bottom:20px\"><i class=\"fa-solid fa-house-medical\" style=\"font-size:60px;color:var(--db)\"></i></div><h1>SIS-Schulung</h1><p style=\"font-size:18px;color:var(--dp)\"><strong>Ambulante Pflege</strong></p><div style=\"height:2px;background:var(--da);width:80px;margin:15px auto\"></div></div><div class=\"sf\"><span>&#8592; Wischen f&#252;r Start</span><span>Folie 1 / 16</span></div></section><section class=\"slide\"><h2>Einleitung und Klientensicht</h2><h3>Was brauchen Sie, was k&#246;nnen wir f&#252;r Sie tun?</h3><p><strong>Pers&#246;nliche und individuelle Anliegen und W&#252;nsche</strong></p><ul class=\"il\"><li><i class=\"fa-solid fa-circle-check\"></i> Was hat zu dem Hilfebedarf gef&#252;hrt z.B. nach Sturz oder Klinikaufenthalt oder &#220;berforderung</li><li><i class=\"fa-solid fa-circle-check\"></i> Welche Unterst&#252;tzung wird gew&#252;nscht z.B. Hilfe bei der Pflege, Anziehen der KS</li></ul><div class=\"alert-box\"><i class=\"fa-solid fa-triangle-exclamation\"></i> <strong>Wichtig:</strong> &#8222;w&#246;rtliche Rede&#8220;</div><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 2 / 16</span></div></section><section class=\"slide\"><h2>Biografische Informationen</h2><p><strong>Pflegerelevante biografische Informationen:</strong> Bei Demenzerkrankung z.B.</p><div class=\"tile\"><ul class=\"il\" style=\"margin-bottom:0\"><li><i class=\"fa-solid fa-music\"></i> Hat in einem Chor gesungen (ist gerne in Gesellschaft)</li><li><i class=\"fa-solid fa-comments\"></i> Hatten eine Gastwirtschaft (ist sehr kommunikativ)</li><li><i class=\"fa-solid fa-shield-halved\"></i> Hat im Krieg Schlimmes erlebt (ist ver&#228;ngstigt)</li><li><i class=\"fa-solid fa-user-lock\"></i> War immer eher ein Einzelg&#228;nger (mag das &#8222;allein sein&#8220;)</li></ul></div><div class=\"tile purple-tile\"><p>&#8226; Die SIS muss nicht separat evaluiert werden, aber &#252;bersichtlich und aktuell sein.</p><p style=\"margin-bottom:0\">&#8226; Bei reiner Behandlungspflege muss keine SIS geschrieben werden.</p></div><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 3 / 16</span></div></section><section class=\"slide\"><h2>SIS 3-Teilung Beispiele</h2><table><thead><tr><th>Sicht Klienten/Angeh&#246;rige (Originalton)</th><th>Pflegefachliche Einsch&#228;tzung</th><th>Absprachen</th></tr></thead><tbody><tr><td><strong>TF 1:</strong> &#8222;Ich h&#246;re sehr schlecht&#8220;</td><td>kann trotz Schwerh&#246;rigkeit noch gut kommunizieren</td><td>tr&#228;gt H&#246;rger&#228;te</td></tr><tr><td><strong>TF 2:</strong> &#8222;Ich habe Angst zu fallen, ich brauche Hilfe beim Transfer&#8220;</td><td>nutzt Rollator / unsicheres Gangbild; ist &#228;ngstlich beim Transfer</td><td>hat einen Lifter</td></tr><tr><td><strong>TF 3:</strong> &#8222;Ich kann meine KS nicht alleine anziehen...&#8220;</td><td>neigt zu &#214;demen in den Beinen</td><td>tgl. Anziehen der KS</td></tr></tbody></table><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 4 / 16</span></div></section><section class=\"slide\"><h2>SIS 3-Teilung Beispiele (Forts.)</h2><table><thead><tr><th>Sicht Klienten/Angeh&#246;rige (Originalton)</th><th>Pflegefachliche Einsch&#228;tzung</th><th>Absprachen</th></tr></thead><tbody><tr><td><strong>TF 4:</strong> &#8222;Waschen kann ich mich noch alleine, beim Duschen brauche ich Hilfe&#8220;</td><td>Selbstversorgungsdefizit im Bereich K&#246;rperpflege</td><td>1xwtl. LK020</td></tr><tr><td><strong>TF 5:</strong> &#8222;Meine Kinder kommen regelm&#228;&#223;ig zu Besuch...&#8220;</td><td>ist gut in famili&#228;res Netz eingebunden</td><td>geht 1xwtl. zur Tagespflege</td></tr><tr><td><strong>TF 6:</strong> &#8222;Den Haushalt schaffe ich noch alleine&#8220;</td><td>k&#246;nnte Unterst&#252;tzung gebrauchen</td><td>Hilfe durch Alzheimergesellschaft angeboten</td></tr></tbody></table><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 5 / 16</span></div></section><section class=\"slide\"><h2>Die 6 Themenfelder (TF 1-3)</h2><div class=\"tl\"><div class=\"tlb\"><div class=\"tll\"></div><div class=\"tln\"><div class=\"tld\"></div><div class=\"tlx\">TF 1</div></div><div class=\"tln\"><div class=\"tld\"></div><div class=\"tlx\">TF 2</div></div><div class=\"tln\"><div class=\"tld\"></div><div class=\"tlx\">TF 3</div></div></div></div><div class=\"tile\"><p><strong>TF 1: Kognition und Kommunikation</strong><br>Orientierung zeitlich, &#246;rtlich, zur Person, situativ, soziale Teilhabe, herausforderndes Verhalten, Kompetenzen, Risiken.</p></div><div class=\"tile\"><p><strong>TF 2: Mobilit&#228;t und Bewegung</strong><br>Bewegung innerhalb und au&#223;erhalb der Wohnung, Treppensteigen, Transfer Bett/Rollstuhl, Sturzgefahr, Dekubitusgefahr.</p></div><div class=\"tile\"><p><strong>TF 3: Krankheitsbezogene Anforderungen und Belastungen</strong><br>Behandlungspflege, Medikation, Injektionen, Kompression, BZ, Wundversorgung, O2, Schmerz, PEG, Katheter, Arztbesuche.</p></div><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 6 / 16</span></div></section><section class=\"slide\"><h2>Die Themenfelder (TF 4-6)</h2><div class=\"tl\"><div class=\"tlb\"><div class=\"tll\"></div><div class=\"tln\"><div class=\"tld blue\"></div><div class=\"tlx\">TF 4</div></div><div class=\"tln\"><div class=\"tld blue\"></div><div class=\"tlx\">TF 5</div></div><div class=\"tln\"><div class=\"tld blue\"></div><div class=\"tlx\">TF 6</div></div></div></div><div class=\"tile purple-tile\"><p><strong>TF 4: Selbstversorgung</strong><br>K&#246;rperpflege, Ern&#228;hrung Essen/Trinken, Ausscheidung Inkontinenz, Prothesenpflege.</p></div><div class=\"tile purple-tile\"><p><strong>TF 5: Leben in sozialen Beziehungen</strong><br>Aktivit&#228;ten, Unterst&#252;tzung durch Angeh&#246;rige oder Betreuer.</p></div><div class=\"tile purple-tile\"><p><strong>TF 6: Haushaltsf&#252;hrung</strong><br>Eigenst&#228;ndige Bew&#228;ltigung, Unterst&#252;tzung durch Dritte.</p></div><div class=\"alert-box\"><p>Die SIS muss sp&#228;testens <strong>3 Wochen nach Pflegebeginn</strong> vollst&#228;ndig geschrieben sein.</p></div><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 7 / 16</span></div></section><section class=\"slide\"><h2>Risikomatrix &amp; Assessments</h2><div class=\"tile\"><p><strong>Wann besteht ein Risiko?</strong><br>Ein Risiko liegt vor, wenn Klienten die Situation kognitiv nicht einsch&#228;tzen k&#246;nnen oder k&#246;rperlich auf Hilfe angewiesen sind.</p></div><div class=\"alert-box\"><i class=\"fa-solid fa-headset\"></i> <strong>Beratung:</strong> Zu jedem erhobenen Risiko in der Matrix muss eine Beratung erfolgen. Beratung im Beratungsblatt dokumentieren.</div><p><strong>Assessments:</strong> Ern&#228;hrung, Harnkontinenz, Sturz, Dekubitus, Schmerz, Mundgesundheit, Kontraktur.</p><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 8 / 16</span></div></section><section class=\"slide\"><h2>Regeln f&#252;r Assessments</h2><p><strong>F&#252;r den Einsatz aller Assessments gilt:</strong></p><div class=\"tile\"><p>Wurde ein Risiko in der Matrix erhoben und erbringen wir eine pflegerische Leistung, ist <strong>immer ein Assessment</strong> zu f&#252;hren.</p><p>Die Assessments sind hinter dem Beratungsblatt abzuheften.</p></div><ul class=\"il\"><li><i class=\"fa-solid fa-calendar-day\"></i> Wunddokumentation 1x w&#246;chentlich f&#252;hren!</li><li><i class=\"fa-solid fa-bed\"></i> Bei Dekubitusgefahr (Immobilit&#228;t) und Versorgung immer einen Lagerungsplan f&#252;hren!</li></ul><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 9 / 16</span></div></section><section class=\"slide\"><h2>Evaluierung</h2><ul class=\"il\"><li><i class=\"fa-solid fa-pen-to-square\"></i> Die Evaluierungszeitr&#228;ume werden im Ma&#223;nahmenplan festgelegt.</li><li><i class=\"fa-solid fa-exclamation\"></i> Sollte dort kein Platz mehr sein, kann im Berichteblatt in einer separaten Zeile mit Datum und Ausrufezeichen die Evaluierung erfolgen.</li><li><i class=\"fa-solid fa-arrows-rotate\"></i> Bei jeder Evaluation m&#252;ssen auch die Assessments evaluiert werden!</li><li><i class=\"fa-solid fa-file-waveform\"></i> Das Schmerzassessment wird immer mit separater Zeile im Berichteblatt evaluiert.</li></ul><div class=\"alert-box\"><p><strong>Fristen:</strong> Bei stabiler Pflegesituation mindestens <strong>alle 12 Wochen</strong> evaluieren. Bei Ver&#228;nderung der Pflegesituation immer umgehend!</p></div><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 10 / 16</span></div></section><section class=\"slide\"><h2>Fachliche Erg&#228;nzungen</h2><div class=\"tile\"><p><strong>Schmerzmanagement:</strong> Bei chronischen Schmerzen Schmerzprotokoll (VAS/NRS) zur rechtssicheren Verlaufsdokumentation gem&#228;&#223; Expertenstandard f&#252;hren.</p></div><div class=\"tile purple-tile\"><p><strong>Wunddokumentation:</strong> Bei infizierten Wunden muss die Dokumentation abweichend vom 1x w&#246;chentlichen Rhythmus bei jedem Verbandwechsel erfolgen.</p></div><div class=\"tile\"><p><strong>Lagerungsplan:</strong> Individuell angepasst, keine starren Zeitgitter ohne Bezug zu den Ressourcen des Klienten.</p></div><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 11 / 16</span></div></section><section class=\"slide\"><h2>Ma&#223;nahmenplan: Grunds&#228;tzliches</h2><h3>Bed&#252;rfnisse, W&#252;nsche, Vorlieben:</h3><p>z.B. Gesicht ohne Seife waschen, Klient friert schnell, tr&#228;gt den BH &#252;ber dem Unterhemd, frische Sachen liegen bereit, ruhige Ansprache und erkl&#228;ren einzelner Schritte bei bestehender Demenz, wann werden neue KS bestellt, wer k&#252;mmert sich um die Medikamente, wer um das Verordnungsmanagement, etc.</p><div class=\"alert-box\"><i class=\"fa-solid fa-vial-medical\"></i> Bei reiner Behandlungspflege muss der Ma&#223;nahmenplan nur bei Ver&#228;nderungen evaluiert werden.</div><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 12 / 16</span></div></section><section class=\"slide\"><h2>Bei pflegerischer Leistung gilt:</h2><ul class=\"il\"><li><i class=\"fa-solid fa-signature\"></i> Datum und Handzeichen (auch bei Behandlungspflege)</li><li><i class=\"fa-solid fa-square-check\"></i> Bei stabiler Pflegesituation bitte ankreuzen</li><li><i class=\"fa-solid fa-calendar-check\"></i> Evaluierungszeitraum mindestens alle 12 Wochen; immer bei ver&#228;nderter Pflegesituation</li><li><i class=\"fa-solid fa-clock\"></i> Ungef&#228;hre Uhrzeit / Themenfelder benennen z.B. TF 3 f&#252;r Behandlungspflege; TF 4 f&#252;r Grundpflege</li><li><i class=\"fa-solid fa-question\"></i> Wer macht was, wann, wie, wo? Auf Aktualit&#228;t der Absprachen achten</li><li><i class=\"fa-solid fa-hand-holding-medical\"></i> Alle notwendigen Prophylaxen beschreiben (immer die Hautinspektion)</li><li><i class=\"fa-solid fa-shoe-prints\"></i> Deprivationsprophylaxe z.B. strukturierter Tagesablauf, Kontakte aufrechterhalten, Bewegung</li></ul><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 13 / 16</span></div></section><section class=\"slide\"><h2>Bericht</h2><ul class=\"il\"><li><i class=\"fa-solid fa-play\"></i> <strong>Versorgungsbeginn:</strong> kurze Situationsanalyse</li><li><i class=\"fa-solid fa-chart-line\"></i> <strong>Abweichungen:</strong> z.B. kleine statt gro&#223;er Pflege</li><li><i class=\"fa-solid fa-reply\"></i> <strong>Antworten auf Probleme:</strong> z.B. H&#228;matom abgeheilt</li><li><i class=\"fa-solid fa-plus\"></i> <strong>Nicht geplante Ma&#223;nahmen:</strong> zus&#228;tzliche Unterst&#252;tzung</li><li><i class=\"fa-solid fa-hospital\"></i> <strong>KH-Aufenthalt:</strong> Zur&#252;ck aus KH, AZ beschreiben</li><li><i class=\"fa-solid fa-phone\"></i> Angeh&#246;rige und/oder Hausarzt informiert</li></ul><div class=\"alert-box\" style=\"font-family:monospace;font-size:11px\">Evaluierung: Datum / ! / Evaluierung der Dokumentation / Handzeichen</div><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 14 / 16</span></div></section><section class=\"slide\"><h2>Beratung &#8211; Beraten wird immer!</h2><div class=\"tile\" style=\"font-size:11.5px\"><strong>Dekubitus:</strong> Lagerungstechniken, Sitzkissen<br><strong>Sturz:</strong> Transfer, Rollator, Haltegriffe<br><strong>Mund:</strong> Zahnarztkontrolle, Mundinspektion<br><strong>Wunden:</strong> Kontamination, Compliance</div><div class=\"tile purple-tile\" style=\"font-size:11.5px\"><strong>Ern&#228;hrung:</strong> Fl&#252;ssigkeit, Mangelern&#228;hrung<br><strong>Haut:</strong> pH-neutral, r&#252;ckfettend<br><strong>Schmerz:</strong> Anpassung der Schmerztherapie<br><strong>Harn:</strong> Inkontinenzmaterial, Toilettenstuhl</div><p style=\"font-size:12px;margin-top:5px\"><strong>Obstipation:</strong> ausreichende Fl&#252;ssigkeit/Movicol<br><strong>Kontraktur:</strong> Gelenke bewegen, Spitzfu&#223;prophylaxe<br><strong>Demenz:</strong> Tagespflege, Alzheimer-Gesellschaft</p><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 15 / 16</span></div></section><section class=\"slide\"><h2>&#220;berpr&#252;fungsquellen</h2><table><thead><tr><th>Quelle</th><th>Link</th></tr></thead><tbody><tr><td>Ein-STEP (Strukturmodell)</td><td>www.ein-step.de</td></tr><tr><td>Medizinischer Dienst (QPR)</td><td>www.mds-ev.de</td></tr><tr><td>DNQP (Expertenstandards)</td><td>www.dnqp.de</td></tr><tr><td>GKV-Spitzenverband</td><td>www.gkv-spitzenverband.de</td></tr></tbody></table><div style=\"text-align:center;margin-top:30px\"><i class=\"fa-solid fa-mug-hot\" style=\"font-size:32px;color:var(--da)\"></i><p style=\"margin-top:5px\"><strong>Vielen Dank f&#252;r Ihre Aufmerksamkeit!</strong></p></div><div class=\"sf\"><span>Ende der Pr&#228;sentation</span><span>Folie 16 / 16</span></div></section></div></body></html>"};
+DOCS.qpr={title:'QPR-Schulung 2026',folder:'Schulungen',filename:'QPR-Schulung-2026.html',html:"<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no\"><title>QPR-Schulung 2026</title><link href=\"https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Lato:wght@400;700&display=swap\" rel=\"stylesheet\"><link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css\"><style>:root{--dv:#5A2590;--dc:#009BDC;--dr:#A80000;--dw:#E2A100;--bg:#F4F0F9;--tx:#1C2B3A}*{box-sizing:border-box;margin:0;padding:0}html,body{width:100%;height:100%;overflow:hidden;background:var(--dv);font-family:'Lato',sans-serif}.wrap{display:flex;width:100%;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}.slide{flex:0 0 100%;width:100%;height:100%;scroll-snap-align:start;background:#fff;display:flex;flex-direction:column;padding:40px 25px;position:relative;overflow-y:auto;border-right:1px solid #EDE8F5}.slide::before{content:'';position:absolute;top:0;left:0;width:100%;height:12px;background:linear-gradient(90deg,var(--dv),var(--dc));z-index:10}.ts{background:var(--dv)!important}.ts::before{background:none}.sf{margin-top:auto;padding-top:15px;border-top:1px solid #EDE8F5;display:flex;justify-content:space-between;font-size:11px;color:#a0aec0}.ts .sf{border-top-color:rgba(255,255,255,.15);color:rgba(255,255,255,.4)}h1{font-family:'Poppins',sans-serif;color:var(--dc);font-size:26px;margin-bottom:12px;line-height:1.3}h2{font-family:'Poppins',sans-serif;color:var(--dv);font-size:18px;margin-bottom:15px;border-bottom:3px solid var(--dc);padding-bottom:6px;display:inline-block}h3{font-family:'Poppins',sans-serif;color:var(--dv);font-size:14px;margin:12px 0 5px;font-weight:700}p,li{color:var(--tx);font-size:13px;line-height:1.5;margin-bottom:6px}strong{color:var(--dv)}ol{padding-left:20px}ol li{margin-bottom:10px}ul{padding-left:18px}ul li{margin-bottom:8px}.box{background:var(--bg);padding:12px;border-left:5px solid var(--dv);border-radius:4px;margin:10px 0}.bc{border-left-color:var(--dc);background:#EBF8FF}.bw{border-left-color:var(--dw);background:#FFFBEB}.br{border-left-color:var(--dr);background:#FFF5F5}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.badge{display:inline-block;padding:3px 8px;border-radius:4px;font-size:10.5px;font-weight:700;color:#fff;background:var(--dc)}.bv{background:var(--dv)}.brr{background:var(--dr)}.bww{background:var(--dw)}.step{font-weight:700;color:var(--dc)}.sh{position:fixed;bottom:20px;right:20px;background:var(--dv);color:#fff;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:bold;box-shadow:0 3px 8px rgba(0,0,0,.25);z-index:1000;pointer-events:none}</style></head><body><div class=\"sh\">Wischen <i class=\"fa-solid fa-arrow-right\"></i></div><div class=\"wrap\"><section class=\"slide ts\"><div style=\"margin:auto;text-align:center;width:100%;padding:20px 0\"><div style=\"background:rgba(255,255,255,.1);display:inline-block;padding:22px;border-radius:50%;margin-bottom:20px\"><svg width=\"80\" height=\"88\" viewBox=\"0 0 80 88\" xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient id=\"qsg\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0%\" stop-color=\"rgba(255,255,255,0.3)\"/><stop offset=\"100%\" stop-color=\"rgba(255,255,255,0.08)\"/></linearGradient></defs><path d=\"M40 6 L70 19 L70 44 C70 64 55 77 40 82 C25 77 10 64 10 44 L10 19 Z\" fill=\"url(#qsg)\" stroke=\"rgba(255,255,255,0.65)\" stroke-width=\"2.5\"/><path d=\"M40 14 L63 24 L63 44 C63 59 51 70 40 74 C29 70 17 59 17 44 L17 24 Z\" fill=\"none\" stroke=\"rgba(255,255,255,0.2)\" stroke-width=\"1.5\"/><polyline points=\"23,44 35,57 58,29\" fill=\"none\" stroke=\"#009BDC\" stroke-width=\"7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"24\" y=\"67\" width=\"32\" height=\"15\" rx=\"7.5\" fill=\"rgba(0,155,220,0.38)\"/><text x=\"40\" y=\"79\" font-family=\"Poppins,sans-serif\" font-size=\"9\" font-weight=\"800\" fill=\"white\" text-anchor=\"middle\">2026</text></svg></div><h1>Die neuen QPR-Richtlinien<br>in der ambulanten Pflege</h1><p style=\"font-size:16px;color:#fff;font-weight:600;margin-top:16px\">Der Systemwechsel ab 1. Juli 2026</p><div style=\"height:2px;background:var(--dc);width:80px;margin:16px auto\"></div><p style=\"font-size:12px;color:rgba(255,255,255,.55)\">Fokus: Ergebnisqualit&#228;t &amp; geschlossene Dokumentationsketten</p></div><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 1 / 9</span></div></section><section class=\"slide\"><h2>Der gro&#223;e Systemwechsel 2026</h2><ul><li><strong>Stichtag:</strong> G&#252;ltig ab dem 01. Juli 2026.</li><li><strong>Abschaffung der Pflegenoten:</strong> Fokus liegt nicht mehr auf formal korrekten Dokumenten.</li><li><strong>Ergebnisorientierung:</strong> Gepr&#252;ft wird die tats&#228;chliche pflegerische Wirkung im Alltag.</li><li><strong>Struktur-Splittung:</strong><ul style=\"margin-top:6px\"><li><em>Teil 1a:</em> Ambulante Pflege (inkl. Intensivpflege &amp; Psychiatrie).</li><li><em>Teil 1b:</em> Reine ambulante Betreuungsdienste.</li></ul></li></ul><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 2 / 9</span></div></section><section class=\"slide\"><h2>Die 4 neuen Qualit&#228;tsbereiche</h2><div class=\"grid\"><div><h3>1. Mobilit&#228;t &amp; Selbstversorgung</h3><p style=\"font-size:.9em\">Ressourcenf&#246;rderung, Trennsch&#228;rfe Mobilit&#228;t/Kognition, Ern&#228;hrung.</p><h3>2. Krankheit &amp; Therapie</h3><p style=\"font-size:.9em\">Medikamente, Wundversorgung, Schmerzmanagement, Intensivpflege.</p></div><div><h3>3. Organisation &amp; Beratung</h3><p style=\"font-size:.9em\">Stabilit&#228;t des Pflegearrangements, Angeh&#246;rigen-Evaluation, Notfallmanagement.</p><h3>4. Haushaltsf&#252;hrung</h3><p style=\"font-size:.9em\">Alltagsgestaltung und Schnittstellenkoordination (Teil 1b Fokus).</p></div></div><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 3 / 9</span></div></section><section class=\"slide\"><h2>Vierstufige Bewertungsmatrix</h2><p>Die alten Schulnoten entfallen. Der MD bewertet Defizite nach Risiko und Auswirkung:</p><div class=\"box bc\"><strong>Kategorie A:</strong> Optimale Versorgung, keine M&#228;ngel.</div><div class=\"box\" style=\"border-left-color:var(--dc);background:#EBF8FF;margin:8px 0\"><strong>Kategorie B:</strong> Geringf&#252;giges Defizit ohne wesentliche Relevanz.</div><div class=\"box bw\"><strong>Kategorie C:</strong> Dokumentationsdefizit <span class=\"badge bww\">ohne negative Folgen</span> f&#252;r den Patienten.</div><div class=\"box br\"><strong>Kategorie D:</strong> Gravierendes Defizit <span class=\"badge brr\">mit eingetretenen negativen Folgen</span> (Punktabzug!).</div><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 4 / 9</span></div></section><section class=\"slide\"><h2>Die geforderte Dokumentationskette</h2><p>Der MD pr&#252;ft, ob diese Kette l&#252;ckenlos geschlossen ist:</p><ol><li><span class=\"step\">Schritt 1: Assessment</span> &#8211; Einsch&#228;tzung des Ist-Zustands.</li><li><span class=\"step\">Schritt 2: Ma&#223;nahmenplanung</span> &#8211; Konkrete, messbare Ziele.</li><li><span class=\"step\">Schritt 3: Durchf&#252;hrung</span> &#8211; Nachweis der erbrachten Leistung.</li><li><span class=\"step\">Schritt 4: Evaluation</span> &#8211; &#220;berpr&#252;fung der tats&#228;chlichen Wirkung.</li></ol><div class=\"box bc\" style=\"margin-top:14px\"><i class=\"fa-solid fa-link\"></i> <strong>Wichtig:</strong> Alle vier Schritte m&#252;ssen in der Dokumentation abgebildet sein!</div><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 5 / 9</span></div></section><section class=\"slide\"><h2>Beispiel 1: Angeh&#246;rigen-Evaluation</h2><p><strong>Szenario:</strong> Tochter von Frau M. (PG 3) stark &#252;berlastet.</p><p>&#10152; <strong>1. Assessment:</strong> Ersch&#246;pfung &amp; Schlafst&#246;rungen dokumentiert.</p><p>&#10152; <strong>2. Planung:</strong> Entlastung binnen 14 Tagen. Beratung nach &sect; 37.3 SGB XI.</p><p>&#10152; <strong>3. Durchf&#252;hrung:</strong> Gespr&#228;ch durchgef&#252;hrt, Antrag Tagespflege ausgef&#252;llt.</p><p>&#10152; <strong>4. Evaluation:</strong> Tagespflege genutzt. Entlastung best&#228;tigt. Stabil.</p><div class=\"box\" style=\"margin-top:12px\"><span class=\"badge bv\">MD-Pr&#252;fung:</span> Tochter best&#228;tigt Entlastung &#10152; <span class=\"badge\">Kategorie A</span>.</div><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 6 / 9</span></div></section><section class=\"slide\"><h2>Beispiel 2: Schmerzmanagement</h2><p><strong>Szenario:</strong> Herr B. starke Knieschmerzen bei Mobilisation.</p><p>&#10152; <strong>1. Assessment:</strong> <span class=\"badge brr\">NRS 7/10</span> dokumentiert.</p><p>&#10152; <strong>2. Planung:</strong> Ziel NRS &lt; 4. Bedarfsmedikation 30 Min. vor Pflege.</p><p>&#10152; <strong>3. Durchf&#252;hrung:</strong> 07:15 Uhr Ibuprofen 400mg.</p><p>&#10152; <strong>4. Evaluation:</strong> 07:50 Uhr <span class=\"badge\">NRS 3</span>. Schmerzfreie Pflege m&#246;glich.</p><div class=\"box br\" style=\"margin-top:12px\"><span class=\"badge brr\">Achtung (Kat. D):</span> Wird Schritt 4 nie dokumentiert: sofort Defizit mit negativer Folge.</div><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 7 / 9</span></div></section><section class=\"slide\"><h2>Beispiel 3: Wundmanagement</h2><p><strong>Szenario:</strong> Chronischer Ulcus cruris bei Frau L., VW 3x/Woche.</p><p>&#10152; <strong>1. Assessment:</strong> Wundbeschreibung alle 14 Tage (Gr&#246;&#223;e, Exsudat, Foto).</p><p>&#10152; <strong>2. Planung:</strong> Keimfreie Heilung. Ma&#223;nahme nach &#228;rztlicher AO.</p><p>&#10152; <strong>3. Durchf&#252;hrung:</strong> Aseptischer VW abgezeichnet.</p><p>&#10152; <strong>4. Evaluation:</strong> &#8222;Fibrin gel&#246;st, Wunde verkleinert.&#8220;</p><div class=\"box br\" style=\"margin-top:12px\"><span class=\"badge brr\">Achtung (Kat. D):</span> Verschlechterung ohne Re-Evaluation oder Arztinfo: Kategorie D droht.</div><div class=\"sf\"><span>ambulante Pflege</span><span>Folie 8 / 9</span></div></section><section class=\"slide\"><h2>Fazit: Was das QM jetzt tun muss</h2><ul><li><strong>Mitarbeiterschulung:</strong> Nicht nur die Tat, sondern die Wirkung (Evaluation) aufschreiben.</li><li><strong>Software anpassen:</strong> Pflichtfelder f&#252;r Schmerznachkontrolle und Wundevaluationen einrichten.</li><li><strong>Stichproben im Team:</strong> Interne Audits nach der geschlossenen Dokumentationskette durchf&#252;hren.</li></ul><div style=\"text-align:center;margin-top:24px\"><i class=\"fa-solid fa-check-double\" style=\"font-size:36px;color:var(--dc)\"></i><p style=\"margin-top:8px\"><strong>Vielen Dank f&#252;r Ihre Aufmerksamkeit!</strong></p></div><div class=\"sf\"><span>Ende der Pr&#228;sentation</span><span>Folie 9 / 9</span></div></section></div></body></html>"};
+
+/* ── State ── */
+var _m={};
+function sv(k,v){try{localStorage.setItem('nc_'+k,JSON.stringify(v))}catch(e){_m[k]=v}}
+function lv(k,d){try{var v=localStorage.getItem('nc_'+k);return v!==null?JSON.parse(v):d}catch(e){return k in _m?_m[k]:d}}
+var curKey=null;
+
+/* ── View control ── */
+function showV(id){
+  /* Regular block views */
+  ['homeView','esListView'].forEach(function(v){
+    var el=document.getElementById(v);
+    if(!el)return;
+    el.style.display=(v===id)?'block':'none';
+    el.classList.toggle('on',v===id);
+  });
+  /* Flex views */
+  ['docView','esDetailView'].forEach(function(v){
+    var el=document.getElementById(v);
+    if(!el)return;
+    el.style.display=(v===id)?'flex':'none';
+    el.classList.toggle('on',v===id);
+  });
+}
+
+/* ── Sidebar ── */
+function openSB(){document.getElementById('sidebar').classList.add('open');document.getElementById('ov').classList.add('on')}
+function closeSB(){document.getElementById('sidebar').classList.remove('open');document.getElementById('ov').classList.remove('on')}
+function tF(el){el.classList.toggle('open');el.nextElementSibling.classList.toggle('open')}
+
+/* ── Home ── */
+function goHome(){
+  showV('homeView');
+  document.querySelectorAll('.dlink,.es-sb-entry').forEach(function(d){d.classList.remove('active')});
+  document.getElementById('docact').classList.remove('on');
+  document.getElementById('docFrame').srcdoc='';
+  curKey=null;sv('ld',null);
+}
+
+/* ── Doc ── */
+function openDoc(k,navEl){
+  document.querySelectorAll('.dlink,.es-sb-entry').forEach(function(d){d.classList.remove('active')});
+  if(navEl)navEl.classList.add('active');
+  curKey='doc:'+k;
+  var d=DOCS[k];
+  document.getElementById('docact').classList.add('on');
+  document.getElementById('dvT').textContent=d.title;
+  document.getElementById('dvC').textContent=d.folder+' \u00b7 '+(k==='sis'?'16':'9')+' Folien';
+  showV('docView');
+  document.getElementById('docFrame').srcdoc=pFA(d.html);
+  sv('ld','doc:'+k);closeSB();
+}
+
+/* ── ES List ── */
+function openESList(){
+  showV('esListView');
+  document.querySelectorAll('.dlink,.es-sb-entry').forEach(function(d){d.classList.remove('active')});
+  document.getElementById('docact').classList.remove('on');
+  sv('ld','eslist');closeSB();
+}
+
+/* ── ES Detail ── */
+function openES(id,navEl){
+  var es=ESM[id];if(!es)return;
+  document.querySelectorAll('.dlink,.es-sb-entry').forEach(function(d){d.classList.remove('active')});
+  var sn=document.getElementById('nav-es-'+id);if(sn)sn.classList.add('active');
+  if(navEl&&navEl!==sn)navEl.classList.add('active');
+  /* Hero */
+  var hero=document.getElementById('esHero');
+  hero.style.background='linear-gradient(135deg,'+es.farbe+' 0%,'+es.farbe+'99 100%)';
+  document.getElementById('esIcon').innerHTML=es.icon;
+  document.getElementById('esNr').textContent='DNQP Expertenstandard Nr. '+es.nr;
+  document.getElementById('esTitle2').textContent=es.titel;
+  document.getElementById('esT').textContent='ES #'+es.nr+' \u2013 '+es.kurz;
+  document.getElementById('esC').textContent='Richtlinien / Standards \u00b7 '+es.stand;
+  document.getElementById('esChips').innerHTML=
+    '<span class="es-chip">Erstver\u00f6ff. '+es.erst+'</span>'+
+    '<span class="es-chip">'+es.stand+'</span>'+
+    '<span class="es-chip">DNQP \u00b7 Osnabr\u00fcck</span>';
+  /* Ziel */
+  document.getElementById('esZiel').textContent=es.ziel;
+  /* Criteria */
+  var h='<div class="ec ec-s"><div class="ec-badge">S</div><div class="ec-body"><strong>Strukturindikator</strong>'+es.s+'</div></div>';
+  es.p.forEach(function(p){h+='<div class="ec ec-p"><div class="ec-badge">'+p[0]+'</div><div class="ec-body"><strong>Prozessindikator</strong>'+p[1]+'</div></div>';});
+  h+='<div class="ec ec-e"><div class="ec-badge">E</div><div class="ec-body"><strong>Ergebnisindikator</strong>'+es.e+'</div></div>';
+  document.getElementById('esCrit').innerHTML=h;
+  /* Praxis */
+  document.getElementById('esPraxis').textContent=es.praxis;
+  showV('esDetailView');
+  /* Scroll to top */
+  var sc=document.querySelector('#esDetailView .es-scroll');
+  if(sc)sc.scrollTop=0;
+  document.getElementById('docact').classList.remove('on');
+  sv('ld','es:'+id);closeSB();
+}
+function goESList(){openESList()}
+
+/* ── Download / Share ── */
+function mkB(k){return new Blob([DOCS[k].html],{type:'text/html'})}
+function trigDL(k){var u=URL.createObjectURL(mkB(k));var a=document.createElement('a');a.href=u;a.download=DOCS[k].filename;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(u)},2000)}
+function dlDoc(){if(!curKey||!curKey.startsWith('doc:'))return;trigDL(curKey.slice(4));toast('Download gestartet\u2026')}
+async function shDoc(){
+  if(!curKey||!curKey.startsWith('doc:'))return;
+  var k=curKey.slice(4),d=DOCS[k];
+  var f=new File([mkB(k)],d.filename,{type:'text/html'});
+  if(navigator.canShare&&navigator.canShare({files:[f]})){
+    try{await navigator.share({files:[f],title:d.title});toast('Geteilt!');return}
+    catch(e){if(e.name==='AbortError')return}
+  }
+  trigDL(k);
+  window.location.href='mailto:?subject='+encodeURIComponent('Schulung: '+d.title)+'&body='+encodeURIComponent('Datei heruntergeladen: '+d.filename);
+  toast('Datei heruntergeladen.');
+}
+
+/* ── Toast ── */
+var _tt=null;
+function toast(msg){var t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('on');if(_tt)clearTimeout(_tt);_tt=setTimeout(function(){t.classList.remove('on')},3000)}
+
+/* ── Init ── */
+document.addEventListener('DOMContentLoaded',function(){
+  var ld=lv('ld',null);
+  if(!ld){showV('homeView');return}
+  try{
+    if(ld.startsWith('doc:')){var k=ld.slice(4);if(DOCS[k])openDoc(k,document.getElementById('nav-'+k));else showV('homeView');}
+    else if(ld.startsWith('es:')){var id=ld.slice(3);if(ESM[id])openES(id);else showV('homeView');}
+    else if(ld==='eslist'){openESList();}
+    else{showV('homeView');}
+  }catch(e){showV('homeView');}
+});
+</script>
+</body>
+</html>
