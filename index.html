@@ -624,14 +624,41 @@ function doReload(){
 function showUpdateBanner(url,ver,log){var b=document.getElementById('updBanner');if(!b)return;var logT=log?' – '+log:'';b.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg><p style="flex:1;font-size:12.5px"><strong>'+(ver||'Neue Version')+' verf\u00fcgbar</strong>'+logT+'</p><button onclick="doReload()" style="background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.5);border-radius:7px;color:#fff;padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">Aktualisieren</button><button onclick="dismissBanner()" style="background:rgba(0,0,0,.15);border:1px solid rgba(255,255,255,.2);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;cursor:pointer">\u2715</button>';b.classList.add('show');}
 function dismissBanner(){var b=document.getElementById('updBanner');if(b)b.classList.remove('show');}
 function restoreLastView(){var ld=lv('ld',null);if(!ld)return;if(ld==='eslist'){openESList();return;}if(ld.startsWith('es:')){openES(ld.slice(3),null);return;}if(ld.startsWith('doc:')){var k=ld.slice(4);if(DOCS[k])openDoc(k,document.getElementById('nav-'+k));}}
-document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&UPDATE_CHECK_URL){setTimeout(function(){try{autoCheckUpdate();}catch(e){}},1000);}});
+/* ════════════════════════════════════════════════════════
+   AUTO-UPDATE – Prüft bei jedem App-Öffnen (installierte PWA)
+   ════════════════════════════════════════════════════════ */
+async function silentAutoUpdate(){
+  var inIframe=(function(){try{return window.frameElement!==null;}catch(e){return true;}})();
+  if(inIframe) return;
+  var url=window.location.href.split('?')[0].split('#')[0];
+  if(!url||url.startsWith('blob:')||url.startsWith('file:')||url.startsWith('data:')) return;
+  try{
+    var r=await fetch(url,{method:'GET',cache:'no-store',headers:{'Cache-Control':'no-cache,no-store,must-revalidate','Pragma':'no-cache'}});
+    if(!r||!r.ok) return;
+    var html=await r.text();
+    if(!html||html.length<1000) return;
+    var vm=html.match(/var APP_VER='([^']+)'/);
+    if(!vm) return;
+    if(vm[1]!==APP_VER){
+      try{document.open('text/html','replace');document.write(html);document.close();}
+      catch(e){window.location.replace(url+'?v='+Date.now());}
+    }
+  }catch(e){}
+}
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible')
+    setTimeout(function(){try{silentAutoUpdate();}catch(e){}},1500);
+});
+window.addEventListener('focus',function(){
+  setTimeout(function(){try{silentAutoUpdate();}catch(e){}},1500);
+});
 document.addEventListener('DOMContentLoaded',function(){
   try{
     showV('homeView');
     var vb=document.getElementById('verBadge');if(vb)vb.textContent=APP_VER;
     _initScrollWatcher();
     setTimeout(function(){try{wnewCheck();}catch(e){}},800);
-    setTimeout(function(){try{autoCheckUpdate();}catch(e){}},2500);
+    setTimeout(function(){try{silentAutoUpdate();}catch(e){}},3000);
     setTimeout(function(){try{restoreLastView();}catch(e){}},100);
     setTimeout(function(){try{qcCheckDue();}catch(e){}},4000);
     setTimeout(function(){try{qcovCheck();}catch(e){}},1200);
