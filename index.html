@@ -605,21 +605,31 @@ function autoCheckUpdate(){
     .catch(function(){});
   }catch(e){}
 }
-function checkUpdate(){var btn=document.getElementById('updateBtn');if(btn)btn.classList.add('spin');closeSB();setTimeout(function(){if(btn)btn.classList.remove('spin');doReload();},700);}
+function checkUpdate(){
+  var btn=document.getElementById('updateBtn');
+  if(btn) btn.classList.add('spin');
+  closeSB();
+  doReload();
+}
 function doReload(){
+  /* Sandbox/Preview-Erkennung */
   var inIframe=(function(){try{return window.frameElement!==null;}catch(e){return true;}})();
-  if(inIframe){var b=document.getElementById('updBanner');if(b){b.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg><p style="flex:1;font-size:12.5px"><strong>App schlie\u00dfen &amp; neu \u00f6ffnen</strong></p><button onclick="dismissBanner()" style="background:rgba(0,0,0,.15);border:1px solid rgba(255,255,255,.2);border-radius:7px;color:#fff;padding:7px 12px;font-size:12px;cursor:pointer">OK</button>';b.classList.add('show');}return;}
-  try{toast('App wird aktualisiert\u2026');}catch(e){}
+  if(inIframe){
+    var b=document.getElementById('updBanner');
+    if(b){
+      b.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>'
+        +'<p style="flex:1;font-size:12.5px"><strong>App schließen &amp; neu öffnen</strong></p>'
+        +'<button onclick="dismissBanner()" style="background:rgba(0,0,0,.15);border:1px solid rgba(255,255,255,.2);border-radius:7px;color:#fff;padding:7px 12px;font-size:12px;cursor:pointer">OK</button>';
+      b.classList.add('show');
+    }
+    return;
+  }
+  /* Echter Browser / Installierte PWA */
+  try{ toast('App wird aktualisiert…'); }catch(e){}
   sv('ld',null);
-  var url=window.location.href.split('?')[0].split('#')[0];
-  setTimeout(function(){
-    try{
-      fetch(url,{method:'GET',cache:'no-store',headers:{'Cache-Control':'no-cache,no-store,must-revalidate','Pragma':'no-cache'}})
-      .then(function(r){return r.ok?r.text():Promise.reject(r.status);})
-      .then(function(html){try{document.open('text/html','replace');document.write(html);document.close();}catch(e){window.location.replace(url+'?v='+Date.now());}})
-      .catch(function(){try{window.location.replace(url+'?v='+Date.now());}catch(e2){try{window.location.reload();}catch(e3){}}});
-    }catch(e){}
-  },400);
+  var base=window.location.href.split('?')[0].split('#')[0];
+  /* Erzwinge frischen Fetch durch eindeutige URL (umgeht jeden Cache) */
+  window.location.replace(base+'?r='+Date.now());
 }
 function showUpdateBanner(url,ver,log){var b=document.getElementById('updBanner');if(!b)return;var logT=log?' – '+log:'';b.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg><p style="flex:1;font-size:12.5px"><strong>'+(ver||'Neue Version')+' verf\u00fcgbar</strong>'+logT+'</p><button onclick="doReload()" style="background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.5);border-radius:7px;color:#fff;padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">Aktualisieren</button><button onclick="dismissBanner()" style="background:rgba(0,0,0,.15);border:1px solid rgba(255,255,255,.2);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;cursor:pointer">\u2715</button>';b.classList.add('show');}
 function dismissBanner(){var b=document.getElementById('updBanner');if(b)b.classList.remove('show');}
@@ -640,8 +650,7 @@ async function silentAutoUpdate(){
     var vm=html.match(/var APP_VER='([^']+)'/);
     if(!vm) return;
     if(vm[1]!==APP_VER){
-      try{document.open('text/html','replace');document.write(html);document.close();}
-      catch(e){window.location.replace(url+'?v='+Date.now());}
+      window.location.replace(url+'?r='+Date.now());
     }
   }catch(e){}
 }
